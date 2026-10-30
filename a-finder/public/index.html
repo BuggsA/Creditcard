@@ -27,11 +27,12 @@
   <div id="tray" class="tray" hidden></div>
 
   <footer class="footer wrap">
-    <p><strong>Prototype A · Finder.</strong> All cards and offers shown are fictional sample data for design review.</p>
+    <p><strong>Prototype A · Finder.</strong> Card offers were checked on <span id="asof"></span>, but they change often and many vary by applicant. Always confirm terms with the issuer before applying.</p>
     <p>We never check your credit. Values are estimates based on typical spending.</p>
   </footer>
 
   <script src="cards.js"></script>
   <script src="app.js"></script>
+  <script>document.getElementById("asof").textContent = CC.AS_OF;</script>
 </body>
 </html>

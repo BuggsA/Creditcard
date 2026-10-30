@@ -160,3 +160,7 @@ td.net.bad { color: var(--c-fee); }
   .rank, .chipart { display: none; }
   .grid td, .grid th { padding: 10px 8px; }
 }
+.yr1 { display: block; font-size: 10px; color: var(--lime); }
+.real { font-style: normal; color: var(--muted); font-size: 11px; }
+.onote { font-size: 12px; color: #fbbf24; margin: 10px 0 6px; line-height: 1.4; }
+a.issuer { display: inline-block; margin-top: 8px; color: var(--lime); font-size: 12px; }

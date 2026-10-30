@@ -8,7 +8,14 @@ Three standalone prototypes of a "find the credit card for you" site. Each one h
 | [`b-matchmaker/`](b-matchmaker) | **Kindred** | Warm cream & coral, serif type, friendly copy. | 5-question quiz, one question per screen → one top pick with plain-English "why it fits you" → runners-up, head-to-head verdicts, full ranked list. |
 | [`c-explorer/`](c-explorer) | **Ledger** | Dark, data-dense, monospace numbers. For power users. | Enter your monthly spending (sliders/presets) + must-have toggles → sortable table of *your* dollar value per card, stacked value bars, expandable rows, compare dock that tells you what spending would flip the winner. |
 
-All card names, issuers and offers are **fictional sample data** (`shared/cards.js`).
+## Card data
+
+`shared/cards.js` holds 22 real US cards (Chase, American Express, Capital One, Citi, Wells Fargo, Discover), covering travel, hotel, airline, cash back, 0% APR and credit-building cards. Offers were researched from issuer pages and card-review sites on the `AS_OF` date in that file.
+
+- **Welcome offers change often and many vary by applicant.** Cards whose offer conflicted across sources carry an `offerNote` that is shown to visitors. Every card links to its issuer's site.
+- **APRs are not listed**, because they depend on the applicant. The sites say "Variable — set by issuer".
+- **Values are estimates**: `pointValue` is our cents-per-point estimate, `credits[].value` is a realistic share of each credit's face value, and `caps` / `firstYearFee` are counted in the math.
+- Re-check offers regularly (monthly is a reasonable cadence) and update `AS_OF` when you do.
 
 ## Run locally
 

@@ -96,6 +96,7 @@
     }
     const best = answers.spend.map((k) => [k, CC.rate(c, k) * c.pointValue]).sort((a, b) => b[1] - a[1])[0];
     if (best && best[1] >= 2) out.push(`Earns ${CC.rateLabel(c, best[0])} on ${CATEGORIES[best[0]].label.toLowerCase()} — one of your biggest spends.`);
+    if (c.annualFee && c.firstYearFee === 0) out.push(`No annual fee the first year, then ${usd(c.annualFee)}.`);
     if (c.annualFee) {
       const v = CC.ongoingValue(c, spendProfile()) + c.annualFee;
       if (v > c.annualFee) out.push(`The ${usd(c.annualFee)} fee is covered by roughly ${usd(v)} a year in rewards and credits for someone like you.`);
@@ -278,21 +279,26 @@
         <div class="kv"><span>Welcome bonus</span><span>${CC.bonusValue(c) ? usd(CC.bonusValue(c)) : "None"}</span></div>
         <div class="kv"><span>Rewards on your spending</span><span>${usd(CC.yearlyRewards(c, spend))}/yr</span></div>
         <div class="kv"><span>Credits you can use</span><span>${usd(CC.creditsValue(c))}/yr</span></div>
-        <div class="kv"><span>Annual fee</span><span>−${usd(c.annualFee)}</span></div>
+        <div class="kv"><span>Annual fee${c.firstYearFee === 0 ? " (waived year one)" : ""}</span><span>−${usd(CC.firstYearFee(c))}</span></div>
         <div class="kv"><span><strong>Year one total</strong></span><span>${usd(CC.firstYearValue(c, spend))}</span></div>
       </div>
-      ${c.bonus.amount ? `<div class="dsec"><h3>Welcome bonus</h3><p>${esc(CC.bonusSentence(c))}.</p></div>` : ""}
+      ${c.bonus.amount || c.offerNote ? `<div class="dsec"><h3>Welcome bonus</h3><p>${esc(CC.bonusSentence(c))}.</p>${c.offerNote ? `<p class="note">${esc(c.offerNote)}</p>` : ""}</div>` : ""}
       <div class="dsec"><h3>How you earn</h3>${cats.map((k) => `<div class="kv"><span>${CATEGORIES[k].icon} ${CATEGORIES[k].label}</span><span>${CC.rateLabel(c, k)}</span></div>`).join("")}${c.earnNote ? `<p style="font-size:14px;color:var(--ink-soft);margin-top:8px">${esc(c.earnNote)}</p>` : ""}</div>
       ${c.credits.length || c.perks.length ? `<div class="dsec"><h3>Extras</h3>
         ${c.credits.map((x) => `<div class="kv"><span>${esc(x.label)}<br/><small>${esc(x.ease)}</small></span><span>${usd(x.amount)}</span></div>`).join("")}
         ${c.perks.map((p) => `<div class="kv"><span>${PERKS[p]}</span><span>✓</span></div>`).join("")}</div>` : ""}
       <div class="dsec"><h3>The fine print</h3>
         <div class="kv"><span>Intro APR</span><span>${c.introApr ? `0% for ${c.introApr} months` : "None"}</span></div>
-        <div class="kv"><span>Regular APR</span><span>${esc(c.apr)}</span></div>
-        <div class="kv"><span>Foreign transaction fee</span><span>${c.ftf ? "3%" : "None"}</span></div>
+        ${c.secured ? `<div class="kv"><span>Security deposit</span><span>${esc(c.secured)}</span></div>` : ""}
+        <div class="kv"><span>Regular APR</span><span>Variable — set by ${esc(c.issuer)}</span></div>
+        <div class="kv"><span>Foreign transaction fee</span><span>${c.ftf ? (c.ftfRate || "3%") : "None"}</span></div>
         <div class="kv"><span>Credit needed</span><span>${CREDIT_TIERS[c.creditTier]}</span></div>
       </div>
-      ${top && top.id !== c.id ? `<div class="row-btns"><button class="pill" data-vs2="${top.id}|${c.id}">Compare with my top pick</button></div>` : ""}
+      <div class="row-btns">
+        <a class="pill coral" href="${CC.issuerUrl(c)}" target="_blank" rel="noopener" style="text-decoration:none">Check offer at ${esc(c.issuer)} ↗</a>
+        ${top && top.id !== c.id ? `<button class="pill" data-vs2="${top.id}|${c.id}">Compare with my top pick</button>` : ""}
+      </div>
+      <p style="font-size:13px;color:var(--ink-soft);margin-top:16px">Checked ${CC.AS_OF}. Offers change often and may differ for you.</p>
     `);
   }
 

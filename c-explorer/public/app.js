@@ -12,7 +12,7 @@
   };
 
   const state = {
-    spend: { ...DEFAULT_SPEND }, must: [], maxFee: 600, credit: "excellent", horizon: 1,
+    spend: { ...DEFAULT_SPEND }, must: [], maxFee: 900, credit: "excellent", horizon: 1,
     q: "", sort: { key: "net", dir: -1 }, open: null, selected: [], diffOnly: false, dockMin: false,
   };
   try { Object.assign(state, JSON.parse(localStorage.getItem("cc-c-state") || "{}"), { open: null, q: "" }); } catch (e) {}
@@ -27,7 +27,8 @@
   function calc(c) {
     const H = state.horizon;
     const bonus = CC.bonusValue(c), rewards = CC.yearlyRewards(c, state.spend), credits = CC.creditsValue(c), fee = c.annualFee;
-    return { c, bonus, rewards, credits, fee, net: bonus + H * (rewards + credits - fee), pos: bonus + H * (rewards + credits) };
+    const feeTotal = CC.firstYearFee(c) + (H - 1) * fee;
+    return { c, bonus, rewards, credits, fee, feeTotal, net: bonus + H * (rewards + credits) - feeTotal, pos: bonus + H * (rewards + credits) };
   }
   const tierOk = { excellent: ["fair", "good", "excellent"], good: ["fair", "good"], fair: ["fair"] };
   function visible(c) {
@@ -87,7 +88,7 @@
     document.querySelectorAll("[data-p]").forEach((b) => b.classList.toggle("on", JSON.stringify(PRESETS[b.dataset.p]) === JSON.stringify(state.spend)));
     document.querySelectorAll("[data-m]").forEach((b) => b.setAttribute("aria-pressed", state.must.includes(b.dataset.m)));
     $("#fee").value = state.maxFee;
-    $("#fee-out").textContent = state.maxFee >= 600 ? "any" : "≤ " + usd(state.maxFee);
+    $("#fee-out").textContent = state.maxFee >= 900 ? "any" : "≤ " + usd(state.maxFee);
     $("#credit").value = state.credit;
     $("#horizon").value = state.horizon;
   }
@@ -133,17 +134,17 @@
       tbody.innerHTML = rows.map((r, i) => {
         const c = r.c;
         const w = (v) => ((Math.max(0, v) / max) * 100).toFixed(2) + "%";
-        const feeSpan = Math.min(r.fee * H, r.pos);
+        const feeSpan = Math.min(r.feeTotal, r.pos);
         return `
         <tr class="row ${state.open === c.id ? "open" : ""}" data-id="${c.id}">
           <td class="c-sel"><input type="checkbox" data-sel="${c.id}" ${state.selected.includes(c.id) ? "checked" : ""} aria-label="Compare ${esc(c.name)}"/></td>
           <td><div class="cname"><span class="rank">${i + 1}</span><span class="chipart" style="background:linear-gradient(135deg,${c.colors[0]},${c.colors[1]})"></span><span><b>${esc(c.name)}</b><small>${esc(c.issuer)} · ${REWARD_TYPES[c.rewardType]}</small></span></div></td>
-          <td class="num ${r.fee ? "" : "zero"}">${r.fee ? usd(r.fee) : "$0"}</td>
+          <td class="num ${r.fee ? "" : "zero"}">${r.fee ? usd(r.fee) : "$0"}${r.c.firstYearFee === 0 && r.fee ? `<small class="yr1">$0 yr 1</small>` : ""}</td>
           <td class="num ${r.bonus ? "" : "zero"}">${r.bonus ? usd(r.bonus) : "—"}</td>
           <td class="num">${usd(r.rewards)}</td>
           <td class="num ${r.credits ? "" : "zero"}">${r.credits ? usd(r.credits) : "—"}</td>
           <td class="num net ${r.net < 0 ? "bad" : ""}">${usd(r.net)}</td>
-          <td class="c-bar"><div class="bar" title="Bonus ${usd(r.bonus)} · Rewards ${usd(r.rewards * H)} · Credits ${usd(r.credits * H)} · Fee −${usd(r.fee * H)}">
+          <td class="c-bar"><div class="bar" title="Bonus ${usd(r.bonus)} · Rewards ${usd(r.rewards * H)} · Credits ${usd(r.credits * H)} · Fee −${usd(r.feeTotal)}">
             <i class="b" style="width:${w(r.bonus)}"></i><i class="r" style="width:${w(r.rewards * H)}"></i><i class="cr" style="width:${w(r.credits * H)}"></i>
             ${feeSpan ? `<i class="f" style="left:${w(r.pos - feeSpan)};width:${w(feeSpan)}"></i>` : ""}
           </div></td>
@@ -168,12 +169,15 @@
       <div><h4>Terms</h4>
         <div class="kv"><span>Bonus</span><span>${c.bonus.amount ? `${esc(CC.bonusLabel(c))} / ${usd(c.bonus.spend)} in ${c.bonus.months}mo` : "none"}</span></div>
         <div class="kv"><span>Point value</span><span>${c.rewardType === "cashback" ? "cash" : c.pointValue + "¢"}</span></div>
-        ${c.credits.map((x) => `<div class="kv"><span>${esc(x.label)}</span><span>${usd(x.amount)}</span></div>`).join("")}
+        ${c.credits.map((x) => `<div class="kv"><span>${esc(x.label)}</span><span>${usd(x.amount)}${x.value !== x.amount ? ` <i class="real">≈${usd(x.value)}</i>` : ""}</span></div>`).join("")}
         ${c.perks.map((p) => `<div class="kv"><span>${PERKS[p]}</span><span>✓</span></div>`).join("")}
         <div class="kv"><span>Intro APR</span><span>${c.introApr ? `0% · ${c.introApr}mo` : "—"}</span></div>
-        <div class="kv"><span>APR</span><span>${esc(c.apr)}</span></div>
-        <div class="kv"><span>Foreign fee</span><span>${c.ftf ? "3%" : "none"}</span></div>
+        ${c.secured ? `<div class="kv"><span>Deposit</span><span>${esc(c.secured)}</span></div>` : ""}
+        <div class="kv"><span>APR</span><span>variable</span></div>
+        <div class="kv"><span>Foreign fee</span><span>${c.ftf ? (c.ftfRate || "3%") : "none"}</span></div>
         <div class="kv"><span>Credit</span><span>${CREDIT_TIERS[c.creditTier]}</span></div>
+        ${c.offerNote ? `<p class="onote">${esc(c.offerNote)}</p>` : ""}
+        <a class="issuer" href="${CC.issuerUrl(c)}" target="_blank" rel="noopener">Check current offer at ${esc(c.issuer)} ↗</a>
       </div>
     </div></td></tr>`;
   }
@@ -214,7 +218,7 @@
       ...Object.keys(CATEGORIES).map((k) => [CATEGORIES[k].label, (r) => +(CC.rate(r.c, k) * r.c.pointValue).toFixed(2), "high", (v) => v.toFixed(1) + "¢"]),
       ["Perks", null],
       ["Lounge access", (r) => (r.c.perks.includes("lounge") ? "yes" : "—")],
-      ["Foreign fee", (r) => (r.c.ftf ? "3%" : "none")],
+      ["Foreign fee", (r) => (r.c.ftf ? (r.c.ftfRate || "3%") : "none")],
       ["Intro APR", (r) => (r.c.introApr ? r.c.introApr + " mo" : "—")],
     ];
     const body = lines.map(([label, fn, better, fmt]) => {
