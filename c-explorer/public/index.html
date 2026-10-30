@@ -3,17 +3,35 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Ledger — Card value explorer</title>
-  <meta name="description" content="Enter how you spend and see what every card is actually worth to you, in dollars." />
+  <title>Ledger — Which credit card is worth the most for your spending?</title>
+  <meta name="description" content="See what 22 popular credit cards are actually worth for your spending, in dollars — bonus, rewards, credits and fees — and which card to add next." />
+  <link rel="canonical" href="{{SITE}}/" />
+  <meta name="theme-color" content="#0b0f14" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Ledger" />
+  <meta property="og:title" content="Ledger — What is each credit card actually worth to you?" />
+  <meta property="og:description" content="Enter your spending and see every card's real value in dollars: bonus, rewards, credits and fees. Free, and it never checks your credit." />
+  <meta property="og:url" content="{{SITE}}/" />
+  <meta property="og:image" content="{{SITE}}/og/default.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Ledger ranks credit cards by what they're worth for your spending" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Ledger — What is each credit card actually worth to you?" />
+  <meta name="twitter:description" content="Enter your spending and see every card's real value in dollars: bonus, rewards, credits and fees." />
+  <meta name="twitter:image" content="{{SITE}}/og/default.png" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","name":"Ledger","url":"{{SITE}}/"},{"@type":"WebApplication","name":"Ledger — Credit card value explorer","url":"{{SITE}}/","applicationCategory":"FinanceApplication","operatingSystem":"Any","description":"Calculates what each credit card is worth for your own spending: sign-up bonus, rewards, credits and annual fee.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}]}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230b0f14'/><rect x='7' y='18' width='4' height='7' fill='%23a3e635'/><rect x='14' y='12' width='4' height='13' fill='%23a3e635'/><rect x='21' y='7' width='4' height='18' fill='%23a3e635'/></svg>" />
+  <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
 </head>
 <body>
   <header class="top">
-    <div class="brand"><svg class="i glyph" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="13" width="4.5" height="8" rx="1" fill="currentColor"/><rect x="9.75" y="8" width="4.5" height="13" rx="1" fill="currentColor"/><rect x="16.5" y="3" width="4.5" height="18" rx="1" fill="currentColor"/></svg> LEDGER</div>
+    <a class="brand" href="/"><svg class="i glyph" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="13" width="4.5" height="8" rx="1" fill="currentColor"/><rect x="9.75" y="8" width="4.5" height="13" rx="1" fill="currentColor"/><rect x="16.5" y="3" width="4.5" height="18" rx="1" fill="currentColor"/></svg> LEDGER</a>
     <div class="tagline">What is each card <em>actually</em> worth to you?</div>
     <button class="btn-share" id="share" title="Copy a link to this exact setup"><span id="share-ico" aria-hidden="true"></span><span class="lg">Share setup</span><span class="sm">Share</span></button>
     <button class="btn-ghost" id="toggle-panel" aria-controls="panel" aria-expanded="false"><span class="ico" id="filters-ico" aria-hidden="true"></span> <span class="lg2">Spending &amp; filters</span><span class="sm2">Filters</span><span class="badge" id="filter-badge" hidden></span></button>
@@ -77,6 +95,7 @@
         </div>
       </div>
       <button class="setbar" id="setbar" aria-controls="panel"></button>
+      <h1 class="sr-only">Credit card value calculator: what each card is worth for your spending</h1>
       <div class="summary" id="summary"></div>
       <div class="table-wrap">
         <table class="grid" id="grid">
@@ -96,6 +115,13 @@
           <tbody></tbody>
         </table>
       </div>
+      <noscript><p class="noscript">Ledger's calculator needs JavaScript. You can still browse every card's breakdown and the best-card rankings below.</p></noscript>
+      <!-- seo:links -->
+      <section class="seo-links" aria-label="Guides">
+        <div><h2>Best cards for…</h2><a href="/best/groceries/">Groceries</a><a href="/best/dining/">Dining</a><a href="/best/travel/">Travel</a><a href="/best/hotels/">Hotels</a><a href="/best/airlines/">Airline perks</a><a href="/best/no-annual-fee/">No annual fee</a><a href="/best/sign-up-bonus/">Sign-up bonuses</a><a href="/best/0-percent-apr/">0% intro APR</a><a href="/best/building-credit/">Building credit</a></div>
+        <div><h2>Card breakdowns</h2><a href="/cards/chase-sapphire-preferred/">Chase Sapphire Preferred</a><a href="/cards/chase-sapphire-reserve/">Chase Sapphire Reserve</a><a href="/cards/amex-platinum/">American Express Platinum Card</a><a href="/cards/amex-gold/">American Express Gold Card</a><a href="/cards/capital-one-venture-x/">Capital One Venture X</a><a href="/cards/capital-one-venture/">Capital One Venture Rewards</a><a href="/cards/citi-strata-premier/">Citi Strata Premier</a><a href="/cards/marriott-boundless/">Marriott Bonvoy Boundless</a><a href="/cards/hilton-surpass/">Hilton Honors Surpass</a><a href="/cards/world-of-hyatt/">World of Hyatt</a><a href="/cards/delta-gold/">Delta SkyMiles Gold</a><a href="/cards/united-explorer/">United Explorer</a><a href="/cards/chase-freedom-unlimited/">Chase Freedom Unlimited</a><a href="/cards/wells-fargo-active-cash/">Wells Fargo Active Cash</a><a href="/cards/citi-double-cash/">Citi Double Cash</a><a href="/cards/capital-one-savor/">Capital One Savor Cash Rewards</a><a href="/cards/capital-one-quicksilver/">Capital One Quicksilver</a><a href="/cards/amex-blue-cash-preferred/">American Express Blue Cash Preferred</a><a href="/cards/wells-fargo-autograph/">Wells Fargo Autograph</a><a href="/cards/wells-fargo-reflect/">Wells Fargo Reflect</a><a href="/cards/discover-it-secured/">Discover it Secured</a><a href="/cards/capital-one-platinum-secured/">Capital One Platinum Secured</a></div>
+      </section>
+      <!-- /seo:links -->
     </main>
   </div>
 

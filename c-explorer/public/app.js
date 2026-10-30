@@ -264,9 +264,11 @@
     $("#pv").value = state.pv;
     $("#creditmode").value = state.creditMode;
   }
-  function share() {
-    persist();
-    const btn = $("#share");
+  // Phones get the native share sheet; desktops copy the link. `btn` shows a "Copied" confirmation.
+  async function shareLink({ url, title, text }, btn) {
+    if (navigator.share && matchMedia("(pointer: coarse)").matches) {
+      try { await navigator.share({ url, title, text }); return; } catch (e) { if (e.name === "AbortError") return; }
+    }
     const original = btn.innerHTML;
     const done = () => {
       btn.innerHTML = `${CC.icon("check")} <span>Copied</span>`;
@@ -274,10 +276,19 @@
       setTimeout(() => { btn.innerHTML = original; btn.classList.remove("done"); }, 1800);
     };
     try {
-      navigator.clipboard.writeText(location.href).then(done, () => prompt("Copy this link:", location.href));
+      await navigator.clipboard.writeText(url);
+      done();
     } catch (e) {
-      prompt("Copy this link:", location.href);
+      prompt("Copy this link:", url);
     }
+  }
+  let lastBest = null;
+  function share() {
+    persist();
+    const text = lastBest
+      ? `${lastBest.c.name} comes out on top for my spending on Ledger (${usd(lastBest.net)} in year one). See what each card is worth for yours:`
+      : "See what each credit card is actually worth for your spending:";
+    shareLink({ url: location.href, title: "Ledger — my card rankings", text }, $("#share"));
   }
 
   // ---------- table ----------
@@ -316,6 +327,7 @@
     // Headline pick = best card the visitor can likely get.
     const ranked = [...rows].sort((a, b) => b.net - a.net);
     const best = ranked.find((r) => !r.blocked524) || ranked[0];
+    lastBest = best;
     const n524 = rows.filter((r) => r.blocked524).length;
     let summary = "No cards pass these filters.";
     if (rows.length) {
@@ -409,7 +421,11 @@
         <div class="kv"><span>Intro APR</span><span>${c.introApr ? `0% · ${c.introApr}mo` : "—"}</span></div>
         <div class="kv"><span>Foreign fee</span><span>${c.ftf ? (c.ftfRate || "3%") : "none"}</span></div>
         ${c.offerNote ? `<p class="onote">${esc(c.offerNote)}</p>` : ""}
-        <div class="xbtns"><button data-have="${c.id}">I already have this</button></div>
+        <div class="xbtns">
+          <button data-have="${c.id}">I already have this</button>
+          <a href="/cards/${c.id}/">Full breakdown</a>
+          <button data-sharecard="${c.id}">${CC.icon("link")} Share card</button>
+        </div>
         <a class="issuer" href="${CC.issuerUrl(c)}" target="_blank" rel="noopener">Check current offer at ${esc(c.issuer)} ${CC.icon("external")}</a>
       </div>
     </div></td></tr>`;
@@ -425,6 +441,11 @@
       return render();
     }
     if (e.target.dataset.have) return addWallet(e.target.dataset.have);
+    const sc = e.target.closest("[data-sharecard]");
+    if (sc) {
+      const c = CC.byId(sc.dataset.sharecard);
+      return shareLink({ url: `${location.origin}/cards/${c.id}/`, title: `${c.name} — is it worth it?`, text: `What the ${c.issuer} ${c.name} is really worth, in dollars:` }, sc);
+    }
     if (e.target.closest("a")) return;
     const row = e.target.closest("tr.row");
     if (!row) return;
@@ -509,5 +530,9 @@
   $("#sec-wallet").open = state.wallet.length > 0 || state.n524 > 0;
   $("#sec-assume").open = state.pv !== "typical" || state.creditMode !== "realistic";
   $("#more-spend").open = state.superstore > 0 || state.abroad > 0;
+  // Links from card pages (/#…&card=<id>) open that card's details.
+  const startCard = new URLSearchParams(location.hash.slice(1)).get("card");
+  if (CC.byId(startCard)) state.open = startCard;
   render();
+  if (state.open) document.querySelector(`tr.row[data-id="${state.open}"]`)?.scrollIntoView({ block: "center" });
 })();

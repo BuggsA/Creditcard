@@ -2,9 +2,22 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "creditcard-explorer",
   "compatibility_date": "2026-10-01",
-  // Static-assets-only Worker: no build step, no server code.
+  // Static site plus a tiny Worker (src/worker.js) that fills in the site's
+  // own URL on pages, the sitemap and robots.txt. No build step.
+  "main": "src/worker.js",
   "assets": {
     "directory": "./public",
-    "not_found_handling": "single-page-application"
+    "binding": "ASSETS",
+    // Real 404s (not the home page) so search engines don't index junk URLs.
+    "not_found_handling": "404-page",
+    "run_worker_first": [
+      "/",
+      "/index.html",
+      "/cards/*",
+      "/best/*",
+      "/sitemap.xml",
+      "/robots.txt",
+      "/manifest.webmanifest"
+    ]
   }
 }

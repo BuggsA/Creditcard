@@ -497,11 +497,15 @@
   };
   const matches = (c, key) => MATCHERS[key](c);
 
+  // Lowercase a label's first letter for use mid-sentence, keeping brand names ("Uber Cash", "The Edit") intact.
+  const BRANDS = /^(Uber|Resy|Dunkin|StubHub|The Edit|Hilton|Delta|United|Capital One|CLEAR|Marriott|Hyatt|Chase)/;
+  const midSentence = (s) => (BRANDS.test(s) ? s : s.charAt(0).toLowerCase() + s.slice(1));
+
   // Short, human highlight lines for a card; benefits the visitor asked for come first.
   function highlights(c, wanted = []) {
     const lines = {
       signup_bonus: bonusValue(c) ? `${usd(bonusValue(c))} sign-up bonus value` : null,
-      hotel_credit: c.credits.filter((x) => x.type === "hotel").map((x) => `${usd(x.amount)} ${x.label.toLowerCase()}`)[0] || (c.perks.includes("free_night") ? "Free hotel night every year" : null),
+      hotel_credit: c.credits.filter((x) => x.type === "hotel").map((x) => `${usd(x.amount)} ${midSentence(x.label)}`)[0] || (c.perks.includes("free_night") ? "Free hotel night every year" : null),
       airline_perks: c.perks.includes("free_bag") ? "First checked bag free" : null,
       lounge: c.perks.includes("lounge") ? "Airport lounge access" : null,
       intro_apr: c.introApr ? `0% intro APR for ${c.introApr} months` : null,
@@ -514,7 +518,7 @@
     const out = [];
     for (const k of order) if (lines[k] && !out.includes(lines[k])) out.push(lines[k]);
     for (const x of c.credits) {
-      const l = `${usd(x.amount)} ${x.label.toLowerCase()}`;
+      const l = `${usd(x.amount)} ${midSentence(x.label)}`;
       if (!out.includes(l)) out.push(l);
     }
     return out;
@@ -523,7 +527,7 @@
   window.CC = {
     AS_OF, ICONS, icon, CATEGORIES, BENEFITS, PERKS, CREDIT_TIERS, REWARD_TYPES, CARDS, DEFAULT_SPEND,
     usd, bonusValue, bonusLabel, bonusSentence, rate, rateLabel, creditsValue, creditsFace, firstYearFee,
-    yearlyRewards, firstYearValue, ongoingValue, topEarn, matches, highlights,
+    midSentence, yearlyRewards, firstYearValue, ongoingValue, topEarn, matches, highlights,
     issuerUrl: (c) => ISSUER_URLS[c.issuer],
     issuerRule: (c) => ISSUER_RULES[c.issuer],
     networkNote: (c) => NETWORK_NOTES[c.network],

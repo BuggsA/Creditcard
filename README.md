@@ -29,6 +29,34 @@ Built around the questions people ask most on card forums (e.g. r/CreditCards' r
 - **Your assumptions** — value points at simple redemptions (≈1¢), our estimate, or transfer partners (≈2¢); count credits at nothing, a realistic share, or full face value.
 - **Share setup** — the URL always encodes your spending, wallet and assumptions, so a link reproduces the exact table.
 
+## Ledger: search & sharing
+
+Ledger is built to be found in search and to look good when shared:
+
+- **Guide pages search engines can read** — `c-explorer/public/cards/<id>/` (one "is it worth it?" breakdown per card) and `c-explorer/public/best/<slug>/` (best cards for groceries, dining, travel, hotels, airlines, no annual fee, sign-up bonuses, 0% APR and building credit). Each links into the calculator with the matching spending pre-filled.
+- **Tags on every page** — title, description, canonical URL, Open Graph and Twitter/X preview tags, plus schema.org structured data (`CreditCard`, `ItemList`, `BreadcrumbList`, `WebApplication`).
+- **Share images** — a 1200×630 preview image for the home page and for every card (`c-explorer/public/og/`), plus app icons and a web app manifest for "Add to Home Screen".
+- **`sitemap.xml` and `robots.txt`**, and real 404s for unknown URLs.
+- **Sharing in the app** — "Share setup" opens the phone's share sheet (or copies the link on desktop); each expanded card has "Share card" and "Full breakdown" links.
+
+Pages are written with a `{{SITE}}` placeholder. The small Worker in `c-explorer/src/worker.js` replaces it with whatever domain the site is served from, so canonical links, previews and the sitemap are correct on `workers.dev` and on a custom domain without any config.
+
+After editing card data, regenerate from the repo root:
+
+```bash
+node scripts/sync-cards.mjs
+```
+
+```bash
+node scripts/build-ledger-pages.mjs
+```
+
+```bash
+node scripts/build-ledger-images.mjs
+```
+
+The images script needs Playwright (`npm i -D playwright && npx playwright install chromium`). Once the site is live, submit `https://<your-domain>/sitemap.xml` in Google Search Console and Bing Webmaster Tools.
+
 ## Run locally
 
 Each directory is a static site (no build step). From any of the three folders:
@@ -42,7 +70,7 @@ Or just open `public/index.html` with any static file server.
 
 ## Deploy to Cloudflare
 
-Each folder is its own Cloudflare Worker that serves static assets only (`wrangler.jsonc` → `assets.directory: ./public`). Worker names: `creditcard-finder`, `creditcard-matchmaker`, `creditcard-explorer`.
+Each folder is its own Cloudflare Worker that serves static assets (`wrangler.jsonc` → `assets.directory: ./public`). Ledger also has a tiny Worker script for its search and sharing URLs (see above); it needs no extra setup. Worker names: `creditcard-finder`, `creditcard-matchmaker`, `creditcard-explorer`.
 
 **Git-connected (Workers Builds):** create one Worker per prototype, connect this repo, and set:
 
