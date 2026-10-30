@@ -1,0 +1,10 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "creditcard-explorer",
+  "compatibility_date": "2026-10-01",
+  // Static-assets-only Worker: no build step, no server code.
+  "assets": {
+    "directory": "./public",
+    "not_found_handling": "single-page-application"
+  }
+}

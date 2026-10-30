@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ledger — Card value explorer</title>
+  <meta name="description" content="Enter how you spend and see what every card is actually worth to you, in dollars." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230b0f14'/><rect x='7' y='18' width='4' height='7' fill='%23a3e635'/><rect x='14' y='12' width='4' height='13' fill='%23a3e635'/><rect x='21' y='7' width='4' height='18' fill='%23a3e635'/></svg>" />
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="glyph">▮▮▮</span> LEDGER</div>
+    <div class="tagline">What is each card <em>actually</em> worth to you?</div>
+    <button class="btn-ghost" id="toggle-panel">Adjust spending</button>
+  </header>
+
+  <div class="layout">
+    <aside class="panel" id="panel">
+      <section>
+        <div class="ph"><h2>Monthly spending</h2><span class="mono total" id="total"></span></div>
+        <div class="presets" id="presets"></div>
+        <div id="sliders"></div>
+      </section>
+      <section>
+        <div class="ph"><h2>Must-haves</h2><button class="link" id="clear-must">clear</button></div>
+        <div class="facets" id="facets"></div>
+      </section>
+      <section>
+        <div class="ph"><h2>Limits</h2></div>
+        <label class="field"><span>Max annual fee <b class="mono" id="fee-out"></b></span><input type="range" id="fee" min="0" max="600" step="25" /></label>
+        <label class="field"><span>My credit</span>
+          <select id="credit"><option value="excellent">Excellent — show all</option><option value="good">Good</option><option value="fair">Fair / building</option></select>
+        </label>
+        <label class="field"><span>Value over</span>
+          <select id="horizon"><option value="1">Year 1 (incl. bonus)</option><option value="2">2 years</option><option value="3">3 years</option></select>
+        </label>
+      </section>
+      <p class="fine">Point values are estimates (e.g. flexible points ≈ 1.25–1.6¢). Credits are counted at face value. All cards are fictional sample data. Prototype C · Explorer.</p>
+    </aside>
+
+    <main class="main">
+      <div class="toolbar">
+        <input type="search" id="q" placeholder="Filter by name, issuer or perk…" aria-label="Filter cards" />
+        <div class="legend">
+          <span><i class="sw bonus"></i>Bonus</span><span><i class="sw rewards"></i>Rewards</span><span><i class="sw credits"></i>Credits</span><span><i class="sw fee"></i>Fee</span>
+        </div>
+      </div>
+      <div class="summary" id="summary"></div>
+      <div class="table-wrap">
+        <table class="grid" id="grid">
+          <thead>
+            <tr>
+              <th class="c-sel"></th>
+              <th data-sort="name" class="c-name">Card</th>
+              <th data-sort="fee" class="num">Fee</th>
+              <th data-sort="bonus" class="num">Bonus</th>
+              <th data-sort="rewards" class="num">Rewards/yr</th>
+              <th data-sort="credits" class="num">Credits/yr</th>
+              <th data-sort="net" class="num c-net">Net value</th>
+              <th class="c-bar">Breakdown</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <div class="dock" id="dock" hidden></div>
+
+  <script src="cards.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
