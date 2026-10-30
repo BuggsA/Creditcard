@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CardCompass — Find your card</title>
+  <meta name="description" content="Find the credit card that fits the benefits you want." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%232563eb'/><path d='M16 6l4 10-4 10-4-10z' fill='white'/></svg>" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a href="#/" class="logo"><span class="logo-mark">◆</span> CardCompass</a>
+      <nav class="topnav">
+        <a href="#/cards">Browse cards</a>
+        <a href="#/compare" id="nav-compare">Compare <span class="count" id="nav-count" hidden></span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="app" class="wrap"></main>
+
+  <div id="tray" class="tray" hidden></div>
+
+  <footer class="footer wrap">
+    <p><strong>Prototype A · Finder.</strong> All cards and offers shown are fictional sample data for design review.</p>
+    <p>We never check your credit. Values are estimates based on typical spending.</p>
+  </footer>
+
+  <script src="cards.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
