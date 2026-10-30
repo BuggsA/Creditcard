@@ -6,7 +6,7 @@ Three standalone prototypes of a "find the credit card for you" site. Each one h
 | --- | --- | --- | --- |
 | [`a-finder/`](a-finder) | **CardCompass** | Clean, airy, light blue. Familiar "catalog" UX. | Tap benefit tiles → filter sidebar with chips + sort → card detail → side-by-side compare (up to 4, "only show differences"). |
 | [`b-matchmaker/`](b-matchmaker) | **Kindred** | Warm cream & coral, serif type, friendly copy. | 5-question quiz, one question per screen → one top pick with plain-English "why it fits you" → runners-up, head-to-head verdicts, full ranked list. |
-| [`c-explorer/`](c-explorer) | **Ledger** | Dark, data-dense, monospace numbers. For power users. | Enter your monthly spending (sliders/presets) + must-have toggles → sortable table of *your* dollar value per card, stacked value bars, expandable rows, compare dock that tells you what spending would flip the winner. |
+| [`c-explorer/`](c-explorer) | **Ledger** | Dark, data-dense, monospace numbers. For power users. | Enter your monthly spending (sliders/presets) + must-have toggles → sortable table of *your* dollar value per card, stacked value bars, expandable rows, compare dock that tells you what spending would flip the winner. See [Ledger features](#ledger-features). |
 
 ## Card data
 
@@ -16,6 +16,18 @@ Three standalone prototypes of a "find the credit card for you" site. Each one h
 - **APRs are not listed**, because they depend on the applicant. The sites say "Variable — set by issuer".
 - **Values are estimates**: `pointValue` is our cents-per-point estimate, `credits[].value` is a realistic share of each credit's face value, and `caps` / `firstYearFee` are counted in the math.
 - Re-check offers regularly (monthly is a reasonable cadence) and update `AS_OF` when you do.
+
+## Ledger features
+
+Built around the questions people ask most on card forums (e.g. r/CreditCards' recommendation template):
+
+- **Cards I already have** — add your current cards and every row shows only what a new card *adds* on top of them ("what should my next card be?").
+- **Is the fee worth it after year one?** — a "Yr 2+" column (▲ = beats the best no-fee card for you) and a plain-English verdict in each row, including how much of a card's credits you'd need to use to break even.
+- **Can I get it?** — Chase 5/24 check from "cards opened in the last 24 months" (with an option to hide likely denials), plus each issuer's bonus/application rules.
+- **Walmart / Target / Costco** — move part of your grocery spend to stores most cards don't count as groceries; network notes flag that Costco warehouses only take Visa.
+- **Spending abroad** — foreign transaction fees are subtracted from cards that charge them.
+- **Your assumptions** — value points at simple redemptions (≈1¢), our estimate, or transfer partners (≈2¢); count credits at nothing, a realistic share, or full face value.
+- **Share setup** — the URL always encodes your spending, wallet and assumptions, so a link reproduces the exact table.
 
 ## Run locally
 

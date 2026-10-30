@@ -70,6 +70,24 @@
     Discover: "https://www.discover.com/credit-cards/",
   };
 
+  // Application & bonus rules people ask about most. Issuers don't publish all of these;
+  // they are widely reported by applicants, so the wording stays hedged.
+  const ISSUER_RULES = {
+    Chase: "5/24: usually denied if you've opened 5+ personal cards (any bank) in the last 24 months. The bonus may be unavailable if you've had this card before.",
+    "American Express": "Welcome offers are generally once per lifetime per card. Amex usually tells you before approval if you won't get the bonus.",
+    "Capital One": "Generally approves about one new Capital One card every 6 months. Bonuses may be limited if you've had the card in the last 48 months.",
+    Citi: "One welcome bonus per card family every 48 months. Citi also limits how often you can apply (about 1 card per 8 days, 2 per 65 days).",
+    "Wells Fargo": "Bonus and intro APR may be withheld if you opened another Wells Fargo card in the last 6 months.",
+    Discover: "Cashback Match is for new Discover cardmembers only.",
+  };
+
+  const NETWORK_NOTES = {
+    Visa: "Accepted almost everywhere, including Costco warehouses (Visa only).",
+    Mastercard: "Accepted almost everywhere — but not at Costco warehouses (Visa only).",
+    Amex: "Not accepted everywhere: less common abroad and at some small businesses. Not accepted at Costco warehouses.",
+    Discover: "Limited acceptance outside the U.S. Not accepted at Costco warehouses.",
+  };
+
   // Credit helper: `value` is what a typical cardholder actually gets out of it
   // (used in all value math); `amount` is the advertised face value.
   const cr = (type, amount, label, ease, value = amount) => ({ type, amount, label, ease, value });
@@ -84,7 +102,7 @@
   const CARDS = [
     // ---------- Flexible travel points ----------
     {
-      id: "chase-sapphire-preferred", name: "Sapphire Preferred", issuer: "Chase",
+      id: "chase-sapphire-preferred", network: "Visa", name: "Sapphire Preferred", issuer: "Chase",
       colors: ["#0b2a4a", "#2d5b8a"], annualFee: 95, creditTier: "good", rewardType: "points", pointValue: 1.5,
       bonus: { amount: 75000, unit: "points", spend: 5000, months: 3 },
       earn: { dining: 3, gas: 3, streaming: 3, airfare: 2, hotels: 2, other: 1 },
@@ -95,7 +113,7 @@
       notFor: ["People who'd never book travel through Chase"],
     },
     {
-      id: "chase-sapphire-reserve", name: "Sapphire Reserve", issuer: "Chase",
+      id: "chase-sapphire-reserve", network: "Visa", name: "Sapphire Reserve", issuer: "Chase",
       colors: ["#030712", "#1e293b"], annualFee: 795, creditTier: "excellent", rewardType: "points", pointValue: 1.5,
       bonus: { amount: 100000, unit: "points", spend: 6000, months: 3 },
       offerNote: "Sources reported both 100,000 and 125,000 points in 2026 — check Chase for today's offer.",
@@ -112,7 +130,7 @@
       notFor: ["Anyone who won't use the semi-annual credits — the fee is $795"],
     },
     {
-      id: "amex-platinum", name: "Platinum Card", issuer: "American Express",
+      id: "amex-platinum", network: "Amex", name: "Platinum Card", issuer: "American Express",
       colors: ["#6b7280", "#d1d5db"], annualFee: 895, creditTier: "excellent", rewardType: "points", pointValue: 1.5,
       bonus: { amount: 80000, unit: "points", spend: 8000, months: 6 },
       offerNote: "Offers vary by applicant — some see up to 175,000 points with higher spend.",
@@ -132,7 +150,7 @@
       notFor: ["Everyday spending — only 1x outside flights", "Anyone who doesn't want to track credits"],
     },
     {
-      id: "amex-gold", name: "Gold Card", issuer: "American Express",
+      id: "amex-gold", network: "Amex", name: "Gold Card", issuer: "American Express",
       colors: ["#8a6a1f", "#e3c06a"], annualFee: 325, creditTier: "good", rewardType: "points", pointValue: 1.5,
       bonus: { amount: 60000, unit: "points", spend: 6000, months: 6 },
       offerNote: "No public offer confirmed in our sources — Amex offers vary by applicant.",
@@ -150,7 +168,7 @@
       notFor: ["People who won't use monthly credits — the fee is $325"],
     },
     {
-      id: "capital-one-venture-x", name: "Venture X", issuer: "Capital One",
+      id: "capital-one-venture-x", network: "Visa", name: "Venture X", issuer: "Capital One",
       colors: ["#0f172a", "#334155"], annualFee: 395, creditTier: "excellent", rewardType: "points", pointValue: 1.4,
       bonus: { amount: 75000, unit: "miles", spend: 4000, months: 3 },
       earn: { other: 2 },
@@ -164,7 +182,7 @@
       notFor: ["People who won't book through Capital One Travel"],
     },
     {
-      id: "capital-one-venture", name: "Venture Rewards", issuer: "Capital One",
+      id: "capital-one-venture", network: "Visa", name: "Venture Rewards", issuer: "Capital One",
       colors: ["#1e3a5f", "#3b6ea5"], annualFee: 95, creditTier: "good", rewardType: "points", pointValue: 1.4,
       bonus: { amount: 75000, unit: "miles", spend: 4000, months: 3 },
       offerNote: "Some 2026 offers added a $250–$300 Capital One Travel credit.",
@@ -176,7 +194,7 @@
       notFor: ["Big diners or grocery shoppers — no bonus categories"],
     },
     {
-      id: "citi-strata-premier", name: "Strata Premier", issuer: "Citi",
+      id: "citi-strata-premier", network: "Mastercard", name: "Strata Premier", issuer: "Citi",
       colors: ["#0b3d6e", "#1f78c8"], annualFee: 95, creditTier: "good", rewardType: "points", pointValue: 1.5,
       bonus: { amount: 60000, unit: "points", spend: 4000, months: 3 },
       offerNote: "A limited-time 75,000-point offer has also appeared.",
@@ -190,7 +208,7 @@
 
     // ---------- Hotel cards ----------
     {
-      id: "marriott-boundless", name: "Marriott Bonvoy Boundless", issuer: "Chase",
+      id: "marriott-boundless", network: "Visa", name: "Marriott Bonvoy Boundless", issuer: "Chase",
       colors: ["#5a1a1a", "#a0412d"], annualFee: 95, creditTier: "good", rewardType: "hotel", pointValue: 0.7,
       bonus: { amount: 3, unit: "free nights", spend: 3000, months: 3, value: 700, label: "3 free nights" },
       offerNote: "Each free night is worth up to 50,000 points. Another 2026 offer was 125,000 points + a free night.",
@@ -204,7 +222,7 @@
       notFor: ["Travelers who switch hotel brands"],
     },
     {
-      id: "hilton-surpass", name: "Hilton Honors Surpass", issuer: "American Express",
+      id: "hilton-surpass", network: "Amex", name: "Hilton Honors Surpass", issuer: "American Express",
       colors: ["#0a2240", "#1d4f91"], annualFee: 150, creditTier: "good", rewardType: "hotel", pointValue: 0.5,
       bonus: { amount: 130000, unit: "points", spend: 3000, months: 6 },
       offerNote: "130K + a free night was a limited-time offer reported through July 2026 — today's offer may be lower.",
@@ -216,7 +234,7 @@
       notFor: ["People who rarely stay at Hilton"],
     },
     {
-      id: "world-of-hyatt", name: "World of Hyatt", issuer: "Chase",
+      id: "world-of-hyatt", network: "Visa", name: "World of Hyatt", issuer: "Chase",
       colors: ["#3b2a1a", "#8c6a43"], annualFee: 95, creditTier: "good", rewardType: "hotel", pointValue: 1.5,
       bonus: { amount: 60000, unit: "points", spend: 5000, months: 3 },
       offerNote: "Usually split: 30,000 points after the first spend, more points on extra spending.",
@@ -230,7 +248,7 @@
 
     // ---------- Airline cards ----------
     {
-      id: "delta-gold", name: "Delta SkyMiles Gold", issuer: "American Express",
+      id: "delta-gold", network: "Amex", name: "Delta SkyMiles Gold", issuer: "American Express",
       colors: ["#7a5b14", "#c9a04a"], annualFee: 150, firstYearFee: 0, creditTier: "good", rewardType: "airline", pointValue: 1.1,
       bonus: { amount: 80000, unit: "miles", spend: 3000, months: 6 },
       offerNote: "Reported as up to 80,000 miles plus a $250 statement credit, ending 11/04/2026. Spend terms vary.",
@@ -242,7 +260,7 @@
       notFor: ["People who don't fly Delta"],
     },
     {
-      id: "united-explorer", name: "United Explorer", issuer: "Chase",
+      id: "united-explorer", network: "Visa", name: "United Explorer", issuer: "Chase",
       colors: ["#002244", "#0a5ab8"], annualFee: 150, firstYearFee: 0, creditTier: "good", rewardType: "airline", pointValue: 1.2,
       bonus: { amount: 60000, unit: "miles", spend: 3000, months: 3 },
       offerNote: "2026 offers ranged from 50,000 to 80,000 miles.",
@@ -256,7 +274,7 @@
 
     // ---------- Cash back ----------
     {
-      id: "chase-freedom-unlimited", name: "Freedom Unlimited", issuer: "Chase",
+      id: "chase-freedom-unlimited", network: "Visa", name: "Freedom Unlimited", issuer: "Chase",
       colors: ["#123a6b", "#3a7bd5"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
       bonus: { amount: 200, unit: "usd", spend: 500, months: 3 },
       offerNote: "Some 2026 offers were $250.",
@@ -267,7 +285,7 @@
       notFor: ["Use abroad (3% foreign transaction fee)"],
     },
     {
-      id: "wells-fargo-active-cash", name: "Active Cash", issuer: "Wells Fargo",
+      id: "wells-fargo-active-cash", network: "Visa", name: "Active Cash", issuer: "Wells Fargo",
       colors: ["#7f1d1d", "#d71e28"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
       bonus: { amount: 200, unit: "usd", spend: 500, months: 3 },
       earn: { other: 2 },
@@ -276,7 +294,7 @@
       notFor: ["Use abroad (3% foreign transaction fee)"],
     },
     {
-      id: "citi-double-cash", name: "Double Cash", issuer: "Citi",
+      id: "citi-double-cash", network: "Mastercard", name: "Double Cash", issuer: "Citi",
       colors: ["#0f3b63", "#4a90c2"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
       bonus: { amount: 200, unit: "usd", spend: 1500, months: 6 },
       earn: { other: 2 },
@@ -286,7 +304,7 @@
       notFor: ["New purchases you want to pay off slowly — no 0% on purchases"],
     },
     {
-      id: "capital-one-savor", name: "Savor Cash Rewards", issuer: "Capital One",
+      id: "capital-one-savor", network: "Mastercard", name: "Savor Cash Rewards", issuer: "Capital One",
       colors: ["#4a1d1d", "#b5543a"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
       bonus: { amount: 200, unit: "usd", spend: 500, months: 3 },
       earn: { dining: 3, groceries: 3, streaming: 3, other: 1 },
@@ -296,7 +314,7 @@
       notFor: ["Big spenders on gas or travel"],
     },
     {
-      id: "capital-one-quicksilver", name: "Quicksilver", issuer: "Capital One",
+      id: "capital-one-quicksilver", network: "Mastercard", name: "Quicksilver", issuer: "Capital One",
       colors: ["#3f3f46", "#a1a1aa"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
       bonus: { amount: 200, unit: "usd", spend: 500, months: 3 },
       earn: { other: 1.5 },
@@ -305,7 +323,7 @@
       notFor: ["Maximizing rewards — 2% cards earn more"],
     },
     {
-      id: "amex-blue-cash-preferred", name: "Blue Cash Preferred", issuer: "American Express",
+      id: "amex-blue-cash-preferred", network: "Amex", name: "Blue Cash Preferred", issuer: "American Express",
       colors: ["#0b4f8a", "#4fa3e0"], annualFee: 95, firstYearFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
       bonus: { amount: 250, unit: "usd", spend: 3000, months: 6 },
       offerNote: "Offers seen in 2026 ranged from $250 to $350.",
@@ -317,7 +335,7 @@
       notFor: ["Light spenders — the $95 fee eats the rewards", "Use abroad (2.7% foreign fee)"],
     },
     {
-      id: "wells-fargo-autograph", name: "Autograph", issuer: "Wells Fargo",
+      id: "wells-fargo-autograph", network: "Visa", name: "Autograph", issuer: "Wells Fargo",
       colors: ["#1f1f1f", "#7f1d1d"], annualFee: 0, creditTier: "good", rewardType: "points", pointValue: 1,
       bonus: { amount: 20000, unit: "points", spend: 1000, months: 3 },
       earn: { dining: 3, gas: 3, airfare: 3, hotels: 3, streaming: 3, other: 1 },
@@ -329,7 +347,7 @@
 
     // ---------- 0% APR & building credit ----------
     {
-      id: "wells-fargo-reflect", name: "Reflect", issuer: "Wells Fargo",
+      id: "wells-fargo-reflect", network: "Visa", name: "Reflect", issuer: "Wells Fargo",
       colors: ["#4b5563", "#9ca3af"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
       bonus: { amount: 0, unit: "usd", spend: 0, months: 0 },
       earn: { other: 0 },
@@ -338,7 +356,7 @@
       notFor: ["Earning rewards — it has none"],
     },
     {
-      id: "discover-it-secured", name: "Discover it Secured", issuer: "Discover",
+      id: "discover-it-secured", network: "Discover", name: "Discover it Secured", issuer: "Discover",
       colors: ["#7c2d12", "#f97316"], annualFee: 0, creditTier: "fair", rewardType: "cashback", pointValue: 1,
       bonus: { amount: 0, unit: "usd", spend: 0, months: 0 },
       offerNote: "Discover matches all the cash back you earn in your first year (Cashback Match).",
@@ -351,7 +369,7 @@
       notFor: ["Anyone who can't set aside a $200 deposit"],
     },
     {
-      id: "capital-one-platinum-secured", name: "Platinum Secured", issuer: "Capital One",
+      id: "capital-one-platinum-secured", network: "Mastercard", name: "Platinum Secured", issuer: "Capital One",
       colors: ["#334155", "#64748b"], annualFee: 0, creditTier: "fair", rewardType: "cashback", pointValue: 1,
       bonus: { amount: 0, unit: "usd", spend: 0, months: 0 },
       earn: { other: 0 },
@@ -468,6 +486,8 @@
     usd, bonusValue, bonusLabel, bonusSentence, rate, rateLabel, creditsValue, creditsFace, firstYearFee,
     yearlyRewards, firstYearValue, ongoingValue, topEarn, matches, highlights,
     issuerUrl: (c) => ISSUER_URLS[c.issuer],
+    issuerRule: (c) => ISSUER_RULES[c.issuer],
+    networkNote: (c) => NETWORK_NOTES[c.network],
     byId: (id) => CARDS.find((c) => c.id === id),
   };
 })();
