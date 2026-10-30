@@ -15,23 +15,41 @@
   <header class="top">
     <div class="brand"><span class="glyph">▮▮▮</span> LEDGER</div>
     <div class="tagline">What is each card <em>actually</em> worth to you?</div>
-    <button class="btn-ghost" id="toggle-panel">Adjust spending</button>
+    <button class="btn-share" id="share" title="Copy a link to this exact setup">Share setup</button>
+    <button class="btn-ghost" id="toggle-panel">Adjust</button>
   </header>
 
   <div class="layout">
     <aside class="panel" id="panel">
       <section>
+        <div class="ph"><h2>Cards I already have</h2><button class="link" id="clear-wallet">clear</button></div>
+        <select id="wallet-add" aria-label="Add a card you already have"></select>
+        <div class="wallet" id="wallet"></div>
+        <p class="hint" id="wallet-hint">Add your current cards and the table ranks what each new card would <em>add</em> to them.</p>
+        <label class="field inline"><span>Personal cards opened in the last 24 months</span><input type="number" id="n524" min="0" max="30" step="1" /></label>
+        <label class="check"><input type="checkbox" id="hide524" /> Hide cards I likely can't get</label>
+      </section>
+      <section>
         <div class="ph"><h2>Monthly spending</h2><span class="mono total" id="total"></span></div>
         <div class="presets" id="presets"></div>
         <div id="sliders"></div>
+        <label class="field"><span>Groceries at Walmart / Target / Costco <b class="mono" id="ss-out"></b></span><input type="range" id="superstore" min="0" max="100" step="5" /></label>
+        <p class="hint">Most cards don't count these stores as groceries — that share earns the base rate instead.</p>
+        <label class="field inline"><span>Spending abroad per year</span><input type="number" id="abroad" min="0" step="100" /></label>
       </section>
       <section>
         <div class="ph"><h2>Must-haves</h2><button class="link" id="clear-must">clear</button></div>
         <div class="facets" id="facets"></div>
       </section>
       <section>
-        <div class="ph"><h2>Limits</h2></div>
-        <label class="field"><span>Max annual fee <b class="mono" id="fee-out"></b></span><input type="range" id="fee" min="0" max="600" step="25" /></label>
+        <div class="ph"><h2>Assumptions & limits</h2></div>
+        <label class="field"><span>Value points at</span>
+          <select id="pv"><option value="cash">Simple redemptions (≈1¢)</option><option value="typical">Our estimate (1.4–1.5¢)</option><option value="optimistic">Transfer partners (≈2¢)</option></select>
+        </label>
+        <label class="field"><span>Count card credits</span>
+          <select id="creditmode"><option value="none">Ignore them</option><option value="realistic">Realistic share (≈)</option><option value="full">Full face value</option></select>
+        </label>
+        <label class="field"><span>Max annual fee <b class="mono" id="fee-out"></b></span><input type="range" id="fee" min="0" max="900" step="25" /></label>
         <label class="field"><span>My credit</span>
           <select id="credit"><option value="excellent">Excellent — show all</option><option value="good">Good</option><option value="fair">Fair / building</option></select>
         </label>
@@ -39,7 +57,7 @@
           <select id="horizon"><option value="1">Year 1 (incl. bonus)</option><option value="2">2 years</option><option value="3">3 years</option></select>
         </label>
       </section>
-      <p class="fine">Point values are estimates (e.g. flexible points ≈ 1.25–1.6¢). Credits are counted at face value. All cards are fictional sample data. Prototype C · Explorer.</p>
+      <p class="fine">Point values and the realistic share of credits are our estimates — change them above. Issuer rules are as widely reported by applicants, not official policy. Offers checked <span id="asof"></span> — they change often and vary by applicant, so confirm with the issuer. Prototype C · Explorer.</p>
     </aside>
 
     <main class="main">
@@ -61,6 +79,7 @@
               <th data-sort="rewards" class="num">Rewards/yr</th>
               <th data-sort="credits" class="num">Credits/yr</th>
               <th data-sort="net" class="num c-net">Net value</th>
+              <th data-sort="ongoing" class="num c-ong" title="Net value each year after the first (no bonus). ▲ = beats the best no-fee card for you.">Yr 2+</th>
               <th class="c-bar">Breakdown</th>
             </tr>
           </thead>
@@ -74,5 +93,6 @@
 
   <script src="cards.js"></script>
   <script src="app.js"></script>
+  <script>document.getElementById("asof").textContent = CC.AS_OF;</script>
 </body>
 </html>

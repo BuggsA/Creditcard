@@ -161,7 +161,7 @@
           <div class="results-head">
             <div>
               <h1>${list.length} card${list.length === 1 ? "" : "s"} for you</h1>
-              <div class="sub">Ranked by estimated first-year value <span class="info" title="Sign-up bonus + a year of rewards on typical spending ($2,070/mo) + credits you can use − annual fee.">i</span></div>
+              <div class="sub">Ranked by estimated first-year value <span class="info" title="Sign-up bonus + a year of rewards on typical spending ($2,070/mo) + a realistic share of the card's credits − first-year fee. Points valued at our estimates.">i</span></div>
             </div>
             <div class="sort">
               <button class="btn ghost small mobile-filter-btn" id="open-filters">Filters${chips.length ? ` (${chips.length})` : ""}</button>
@@ -220,7 +220,7 @@
         </div>
         <div class="stats">
           <div class="stat"><label>Sign-up bonus</label><strong>${CC.bonusValue(c) ? usd(CC.bonusValue(c)) : "—"}</strong><small>${c.bonus.amount ? (c.bonus.unit === "usd" ? "cash" : "value of " + CC.bonusLabel(c)) : "no bonus"}</small></div>
-          <div class="stat"><label>Annual fee</label><strong>${c.annualFee ? usd(c.annualFee) : "$0"}</strong><small>${c.annualFee ? "per year" : "free to keep"}</small></div>
+          <div class="stat"><label>Annual fee</label><strong>${c.annualFee ? usd(c.annualFee) : "$0"}</strong><small>${!c.annualFee ? "free to keep" : c.firstYearFee === 0 ? "$0 first year" : "per year"}</small></div>
           <div class="stat"><label>Earn rate</label><strong>${CC.rateLabel(c, Object.keys(c.earn).sort((a, b) => c.earn[b] - c.earn[a])[0])}</strong><small>${esc(CC.topEarn(c, 2).join(" · "))}</small></div>
         </div>
         ${hl.length ? `<ul class="hl">${hl.map((h) => `<li>${esc(h)}</li>`).join("")}</ul>` : ""}
@@ -279,9 +279,10 @@
             <div class="stat"><label>Est. year-one value</label><strong>${usd(CC.firstYearValue(c))}</strong></div>
           </div>
           <p class="meta">${esc(CC.bonusSentence(c))}.</p>
+          ${c.offerNote ? `<p class="note">${esc(c.offerNote)}</p>` : ""}
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
             <button class="btn" id="cmp-btn">${compare.includes(c.id) ? "✓ Added to compare" : "+ Add to compare"}</button>
-            <a class="btn ghost" href="#/cards">Keep browsing</a>
+            <a class="btn ghost" href="${CC.issuerUrl(c)}" target="_blank" rel="noopener">Check current offer at ${esc(c.issuer)} ↗</a>
           </div>
         </div>
       </section>
@@ -310,13 +311,14 @@
         <div class="panel">
           <h2>Rates & fees</h2>
           <table class="tbl">
-            <tr><td>Annual fee</td><td></td><td>${usd(c.annualFee)}</td></tr>
+            <tr><td>Annual fee</td><td></td><td>${usd(c.annualFee)}${c.firstYearFee === 0 && c.annualFee ? " ($0 first year)" : ""}</td></tr>
+            ${c.secured ? `<tr><td>Security deposit</td><td></td><td>${esc(c.secured)}</td></tr>` : ""}
             <tr><td>Intro APR</td><td></td><td>${c.introApr ? `0% for ${c.introApr} months` : "None"}</td></tr>
-            <tr><td>Regular APR</td><td></td><td>${esc(c.apr)}</td></tr>
-            <tr><td>Foreign transaction fee</td><td></td><td>${c.ftf ? "3%" : "None"}</td></tr>
+            <tr><td>Regular APR</td><td></td><td>Variable — set by ${esc(c.issuer)}</td></tr>
+            <tr><td>Foreign transaction fee</td><td></td><td>${c.ftf ? (c.ftfRate || "3%") : "None"}</td></tr>
             <tr><td>Recommended credit</td><td></td><td>${CREDIT_TIERS[c.creditTier]}</td></tr>
           </table>
-          <p class="verified">Last verified: Oct 2026 · Sample data</p>
+          <p class="verified">Offer details checked ${CC.AS_OF}. Terms change often — confirm on ${esc(c.issuer)}'s site before applying.</p>
         </div>
       </section>`;
     app.querySelector("#cmp-btn").addEventListener("click", (e) => {
@@ -341,6 +343,7 @@
     const groups = [
       ["The basics", [
         ["Annual fee", (c) => c.annualFee, "low", (v) => usd(v)],
+        ["First-year fee", (c) => CC.firstYearFee(c), "low", (v) => usd(v)],
         ["Est. first-year value", (c) => CC.firstYearValue(c), "high", (v) => usd(v)],
         ["Est. value after year one", (c) => CC.ongoingValue(c), "high", (v) => usd(v)],
         ["Credit needed", (c) => CREDIT_TIERS[c.creditTier]],
@@ -354,13 +357,14 @@
         `${CATEGORIES[k].icon} ${CATEGORIES[k].label}`, (c) => +(CC.rate(c, k) * c.pointValue).toFixed(1), "high", (v) => v + "¢",
       ])],
       ["Credits & perks", [
-        ["Annual credits", (c) => CC.creditsValue(c), "high", (v) => (v ? usd(v) : "None")],
+        ["Credits (advertised)", (c) => CC.creditsFace(c), "high", (v) => (v ? usd(v) : "None")],
+        ["Credits (realistic value)", (c) => CC.creditsValue(c), "high", (v) => (v ? usd(v) : "None")],
         ...allPerks.map((p) => [PERKS[p], (c) => (c.perks.includes(p) ? "✓" : "—")]),
         ["No foreign fees", (c) => (c.ftf ? "—" : "✓")],
       ]],
       ["Fine print", [
         ["Intro APR", (c) => (c.introApr ? `0% · ${c.introApr} mo` : "None")],
-        ["Regular APR", (c) => c.apr],
+        ["Security deposit", (c) => (c.secured ? "Required" : "—")],
       ]],
     ];
 

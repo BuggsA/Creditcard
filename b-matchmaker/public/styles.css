@@ -167,3 +167,4 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.02e
   .all-row .art, .all-row .bar-meter { display: none; }
   .floaters .mini { width: 110px; }
 }
+.note { font-size: 14px; color: #8a5a00; background: #fbf0d9; border-radius: 12px; padding: 8px 12px; margin: 10px 0 0 !important; }

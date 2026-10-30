@@ -24,8 +24,9 @@
       <div id="drawer-body"></div>
     </div>
   </aside>
-  <footer class="foot">Prototype B · Matchmaker — all cards and offers are fictional sample data. We never check your credit.</footer>
+  <footer class="foot">Prototype B · Matchmaker — offers checked <span id="asof"></span>; they change often, so confirm with the issuer. We never check your credit.</footer>
   <script src="cards.js"></script>
   <script src="app.js"></script>
+  <script>document.getElementById("asof").textContent = CC.AS_OF;</script>
 </body>
 </html>
