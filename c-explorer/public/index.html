@@ -16,7 +16,7 @@
     <div class="brand"><span class="glyph">▮▮▮</span> LEDGER</div>
     <div class="tagline">What is each card <em>actually</em> worth to you?</div>
     <button class="btn-share" id="share" title="Copy a link to this exact setup">Share setup</button>
-    <button class="btn-ghost" id="toggle-panel">Adjust</button>
+    <button class="btn-ghost" id="toggle-panel" aria-controls="panel" aria-expanded="false">Adjust</button>
   </header>
 
   <div class="layout">
@@ -58,7 +58,9 @@
         </label>
       </section>
       <p class="fine">Point values and the realistic share of credits are our estimates — change them above. Issuer rules are as widely reported by applicants, not official policy. Offers checked <span id="asof"></span> — they change often and vary by applicant, so confirm with the issuer. Prototype C · Explorer.</p>
+      <button class="panel-done" id="panel-done"><span>Show results</span></button>
     </aside>
+    <div class="scrim" id="scrim"></div>
 
     <main class="main">
       <div class="toolbar">

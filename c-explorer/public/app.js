@@ -191,8 +191,17 @@
     $("#pv").onchange = (e) => { state.pv = e.target.value; render(); };
     $("#creditmode").onchange = (e) => { state.creditMode = e.target.value; render(); };
     $("#q").oninput = (e) => { state.q = e.target.value.trim(); render(); };
-    $("#toggle-panel").onclick = () => $("#panel").classList.toggle("open");
+    $("#toggle-panel").onclick = () => setPanel(!$("#panel").classList.contains("open"));
+    $("#scrim").onclick = () => setPanel(false);
+    $("#panel-done").onclick = () => setPanel(false);
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") setPanel(false); });
     $("#share").onclick = share;
+  }
+  // Phone/tablet: the settings panel slides over the table.
+  function setPanel(open) {
+    $("#panel").classList.toggle("open", open);
+    document.body.classList.toggle("panel-open", open);
+    $("#toggle-panel").setAttribute("aria-expanded", open);
   }
   function addWallet(id) {
     if (!state.wallet.includes(id)) state.wallet.push(id);
@@ -280,6 +289,7 @@
       if (n524) summary += ` <span class="flag warn">5/24</span> ${n524} Chase card${n524 > 1 ? "s" : ""} likely out of reach.`;
     }
     $("#summary").innerHTML = summary;
+    $("#panel-done span").textContent = `Show ${rows.length} card${rows.length === 1 ? "" : "s"}`;
 
     const tbody = $("#grid tbody");
     if (!rows.length) {
@@ -289,20 +299,21 @@
         const c = r.c;
         const w = (v) => ((Math.max(0, v) / max) * 100).toFixed(2) + "%";
         const feeSpan = Math.min(r.feeTotal, r.pos);
+        const bar = `<div class="bar" title="Bonus ${usd(r.bonus)} · Rewards ${usd(r.rewards * H)} · Credits ${usd(r.credits * H)} · Fee −${usd(r.feeTotal)}">
+            <i class="b" style="width:${w(r.bonus)}"></i><i class="r" style="width:${w(r.rewards * H)}"></i><i class="cr" style="width:${w(r.credits * H)}"></i>
+            ${feeSpan ? `<i class="f" style="left:${w(r.pos - feeSpan)};width:${w(feeSpan)}"></i>` : ""}
+          </div>`;
         return `
         <tr class="row ${state.open === c.id ? "open" : ""}" data-id="${c.id}">
           <td class="c-sel"><input type="checkbox" data-sel="${c.id}" ${state.selected.includes(c.id) ? "checked" : ""} aria-label="Compare ${esc(c.name)}"/></td>
-          <td><div class="cname"><span class="rank">${i + 1}</span><span class="chipart" style="background:linear-gradient(135deg,${c.colors[0]},${c.colors[1]})"></span><span><b>${esc(c.name)}${r.blocked524 ? `<span class="flag warn" title="You've opened 5+ cards in 24 months — Chase usually declines">5/24</span>` : ""}</b><small>${esc(c.issuer)} · ${REWARD_TYPES[c.rewardType]}<span class="flag net">${c.network}</span></small></span></div></td>
+          <td><div class="cname"><span class="rank">${i + 1}</span><span class="chipart" style="background:linear-gradient(135deg,${c.colors[0]},${c.colors[1]})"></span><span><b>${esc(c.name)}${r.blocked524 ? `<span class="flag warn" title="You've opened 5+ cards in 24 months — Chase usually declines">5/24</span>` : ""}</b><small>${esc(c.issuer)}<span class="rtype"> · ${REWARD_TYPES[c.rewardType]}</span><span class="flag net">${c.network}</span></small><span class="mline"><span>Bonus <b>${r.bonus ? usd(r.bonus) : "—"}</b></span><span>Yr 2+ <b>${usd(r.ongoing)}</b>${beatsNoFee(r) ? " ▲" : ""}</span></span>${bar.replace('class="bar"', 'class="bar mbar"')}</span></div></td>
           <td class="num ${r.fee ? "" : "zero"}">${r.fee ? usd(r.fee) : "$0"}${c.firstYearFee === 0 && r.fee ? `<small class="yr1">$0 yr 1</small>` : ""}</td>
           <td class="num ${r.bonus ? "" : "zero"}">${r.bonus ? usd(r.bonus) : "—"}</td>
           <td class="num">${usd(r.rewards)}</td>
           <td class="num ${r.credits ? "" : "zero"}">${r.credits ? usd(r.credits) : "—"}</td>
           <td class="num net ${r.net < 0 ? "bad" : ""}">${usd(r.net)}</td>
           <td class="num ong ${beatsNoFee(r) ? "beat" : ""}">${usd(r.ongoing)}</td>
-          <td class="c-bar"><div class="bar" title="Bonus ${usd(r.bonus)} · Rewards ${usd(r.rewards * H)} · Credits ${usd(r.credits * H)} · Fee −${usd(r.feeTotal)}">
-            <i class="b" style="width:${w(r.bonus)}"></i><i class="r" style="width:${w(r.rewards * H)}"></i><i class="cr" style="width:${w(r.credits * H)}"></i>
-            ${feeSpan ? `<i class="f" style="left:${w(r.pos - feeSpan)};width:${w(feeSpan)}"></i>` : ""}
-          </div></td>
+          <td class="c-bar">${bar}</td>
         </tr>
         ${state.open === c.id ? expandRow(r) : ""}`;
       }).join("");
