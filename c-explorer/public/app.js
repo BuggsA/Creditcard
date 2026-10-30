@@ -193,10 +193,40 @@
     $("#q").oninput = (e) => { state.q = e.target.value.trim(); render(); };
     $("#toggle-panel").onclick = () => setPanel(!$("#panel").classList.contains("open"));
     $("#scrim").onclick = () => setPanel(false);
+    $("#setbar").onclick = () => setPanel(true);
     $("#panel-done").onclick = () => setPanel(false);
     document.addEventListener("keydown", (e) => { if (e.key === "Escape") setPanel(false); });
     $("#share").onclick = share;
   }
+  // Plain-language list of everything the visitor has changed from the defaults.
+  function activeSettings() {
+    const out = [];
+    const must = state.must.map((k) => BENEFITS[k].label);
+    if (must.length) out.push(must.length > 2 ? `${must.slice(0, 2).join(", ")} +${must.length - 2}` : must.join(", "));
+    if (state.maxFee < 900) out.push(state.maxFee ? `Fee ≤ ${usd(state.maxFee)}` : "No annual fee");
+    if (state.credit !== "excellent") out.push(`${CREDIT_TIERS[state.credit]} credit`);
+    if (state.horizon > 1) out.push(`${state.horizon}-year view`);
+    if (state.wallet.length) out.push(`${state.wallet.length} card${state.wallet.length > 1 ? "s" : ""} I have`);
+    if (state.n524) out.push(`${state.n524} new cards / 24 mo`);
+    if (state.superstore) out.push(`${state.superstore}% groceries at superstores`);
+    if (state.abroad) out.push(`${usd(state.abroad)}/yr abroad`);
+    if (state.pv !== "typical") out.push(state.pv === "cash" ? "Points ≈1¢" : "Points ≈2¢");
+    if (state.creditMode !== "realistic") out.push(state.creditMode === "none" ? "Credits ignored" : "Credits at full value");
+    return out;
+  }
+  function renderSetbar() {
+    const total = Object.values(state.spend).reduce((a, b) => a + b, 0);
+    const preset = Object.keys(PRESETS).find((k) => JSON.stringify(PRESETS[k]) === JSON.stringify(state.spend));
+    const tags = activeSettings();
+    $("#setbar").innerHTML = `
+      <span class="sb-main">Based on <b>${usd(total)}/mo</b> spending${preset ? ` <span class="sb-preset">(${preset})</span>` : ""}</span>
+      <span class="sb-tags">${tags.length ? tags.map((t) => `<i>${esc(t)}</i>`).join("") : `<i class="none">No filters</i>`}</span>
+      <span class="sb-edit">Edit</span>`;
+    const badge = $("#filter-badge");
+    badge.hidden = !tags.length;
+    badge.textContent = tags.length;
+  }
+
   // Phone/tablet: the settings panel slides over the table.
   function setPanel(open) {
     $("#panel").classList.toggle("open", open);
@@ -221,6 +251,8 @@
       CARDS.filter((c) => !state.wallet.includes(c.id)).map((c) => `<option value="${c.id}">${esc(c.issuer)} ${esc(c.name)}</option>`).join("");
     $("#wallet").innerHTML = state.wallet.map(CC.byId).map((c) => `<button data-w="${c.id}" title="Remove">${esc(c.name)} <span>×</span></button>`).join("");
     $("#wallet-hint").hidden = state.wallet.length > 0;
+    $("#clear-wallet").hidden = !state.wallet.length;
+    $("#wallet-count").textContent = state.wallet.length ? `${state.wallet.length} added` : "optional";
     for (const [id, key] of [["#n524", "n524"], ["#abroad", "abroad"], ["#superstore", "superstore"], ["#fee", "maxFee"]]) {
       if ($(id) !== skip) $(id).value = state[key];
     }
@@ -289,6 +321,7 @@
       if (n524) summary += ` <span class="flag warn">5/24</span> ${n524} Chase card${n524 > 1 ? "s" : ""} likely out of reach.`;
     }
     $("#summary").innerHTML = summary;
+    renderSetbar();
     $("#panel-done span").textContent = `Show ${rows.length} card${rows.length === 1 ? "" : "s"}`;
 
     const tbody = $("#grid tbody");
@@ -467,5 +500,9 @@
 
   buildPanel();
   syncPanel();
+  // Collapsed sections start open when they hold something the visitor set (e.g. from a shared link).
+  $("#sec-wallet").open = state.wallet.length > 0 || state.n524 > 0;
+  $("#sec-assume").open = state.pv !== "typical" || state.creditMode !== "realistic";
+  $("#more-spend").open = state.superstore > 0 || state.abroad > 0;
   render();
 })();
