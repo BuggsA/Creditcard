@@ -15,40 +15,29 @@
   <header class="top">
     <div class="brand"><span class="glyph">▮▮▮</span> LEDGER</div>
     <div class="tagline">What is each card <em>actually</em> worth to you?</div>
-    <button class="btn-share" id="share" title="Copy a link to this exact setup">Share setup</button>
-    <button class="btn-ghost" id="toggle-panel" aria-controls="panel" aria-expanded="false">Adjust</button>
+    <button class="btn-share" id="share" title="Copy a link to this exact setup"><span class="lg">Share setup</span><span class="sm">Share</span></button>
+    <button class="btn-ghost" id="toggle-panel" aria-controls="panel" aria-expanded="false"><span class="ico" aria-hidden="true">⚙</span> <span class="lg2">Spending &amp; filters</span><span class="sm2">Filters</span><span class="badge" id="filter-badge" hidden></span></button>
   </header>
 
   <div class="layout">
-    <aside class="panel" id="panel">
+    <aside class="panel" id="panel" aria-label="Spending and filters">
       <section>
-        <div class="ph"><h2>Cards I already have</h2><button class="link" id="clear-wallet">clear</button></div>
-        <select id="wallet-add" aria-label="Add a card you already have"></select>
-        <div class="wallet" id="wallet"></div>
-        <p class="hint" id="wallet-hint">Add your current cards and the table ranks what each new card would <em>add</em> to them.</p>
-        <label class="field inline"><span>Personal cards opened in the last 24 months</span><input type="number" id="n524" min="0" max="30" step="1" /></label>
-        <label class="check"><input type="checkbox" id="hide524" /> Hide cards I likely can't get</label>
-      </section>
-      <section>
-        <div class="ph"><h2>Monthly spending</h2><span class="mono total" id="total"></span></div>
+        <div class="ph"><h2>Your monthly spending</h2><span class="mono total" id="total"></span></div>
         <div class="presets" id="presets"></div>
         <div id="sliders"></div>
-        <label class="field"><span>Groceries at Walmart / Target / Costco <b class="mono" id="ss-out"></b></span><input type="range" id="superstore" min="0" max="100" step="5" /></label>
-        <p class="hint">Most cards don't count these stores as groceries — that share earns the base rate instead.</p>
-        <label class="field inline"><span>Spending abroad per year</span><input type="number" id="abroad" min="0" step="100" /></label>
+        <details class="sub" id="more-spend">
+          <summary>More spending details</summary>
+          <label class="field"><span>Groceries at Walmart / Target / Costco <b class="mono" id="ss-out"></b></span><input type="range" id="superstore" min="0" max="100" step="5" /></label>
+          <p class="hint">Most cards don't count these stores as groceries — that share earns the base rate instead.</p>
+          <label class="field inline"><span>Spending abroad per year</span><input type="number" id="abroad" min="0" step="100" /></label>
+        </details>
       </section>
       <section>
-        <div class="ph"><h2>Must-haves</h2><button class="link" id="clear-must">clear</button></div>
+        <div class="ph"><h2>Must-have perks</h2><button class="link" id="clear-must">clear</button></div>
         <div class="facets" id="facets"></div>
       </section>
       <section>
-        <div class="ph"><h2>Assumptions & limits</h2></div>
-        <label class="field"><span>Value points at</span>
-          <select id="pv"><option value="cash">Simple redemptions (≈1¢)</option><option value="typical">Our estimate (1.4–1.5¢)</option><option value="optimistic">Transfer partners (≈2¢)</option></select>
-        </label>
-        <label class="field"><span>Count card credits</span>
-          <select id="creditmode"><option value="none">Ignore them</option><option value="realistic">Realistic share (≈)</option><option value="full">Full face value</option></select>
-        </label>
+        <div class="ph"><h2>Limits</h2></div>
         <label class="field"><span>Max annual fee <b class="mono" id="fee-out"></b></span><input type="range" id="fee" min="0" max="900" step="25" /></label>
         <label class="field"><span>My credit</span>
           <select id="credit"><option value="excellent">Excellent — show all</option><option value="good">Good</option><option value="fair">Fair / building</option></select>
@@ -57,6 +46,24 @@
           <select id="horizon"><option value="1">Year 1 (incl. bonus)</option><option value="2">2 years</option><option value="3">3 years</option></select>
         </label>
       </section>
+      <details class="psec" id="sec-wallet">
+        <summary><h2>Cards I already have</h2><span class="count" id="wallet-count"></span></summary>
+        <p class="hint" id="wallet-hint">Optional. Add your current cards and the table ranks what each new card would <em>add</em> to them.</p>
+        <select id="wallet-add" aria-label="Add a card you already have"></select>
+        <div class="wallet" id="wallet"></div>
+        <button class="link" id="clear-wallet">clear wallet</button>
+        <label class="field inline"><span>Personal cards opened in the last 24 months</span><input type="number" id="n524" min="0" max="30" step="1" /></label>
+        <label class="check"><input type="checkbox" id="hide524" /> Hide cards I likely can't get</label>
+      </details>
+      <details class="psec" id="sec-assume">
+        <summary><h2>How cards are valued</h2></summary>
+        <label class="field"><span>Value points at</span>
+          <select id="pv"><option value="cash">Simple redemptions (≈1¢)</option><option value="typical">Our estimate (1.4–1.5¢)</option><option value="optimistic">Transfer partners (≈2¢)</option></select>
+        </label>
+        <label class="field"><span>Count card credits</span>
+          <select id="creditmode"><option value="none">Ignore them</option><option value="realistic">Realistic share (≈)</option><option value="full">Full face value</option></select>
+        </label>
+      </details>
       <p class="fine">Point values and the realistic share of credits are our estimates — change them above. Issuer rules are as widely reported by applicants, not official policy. Offers checked <span id="asof"></span> — they change often and vary by applicant, so confirm with the issuer. Prototype C · Explorer.</p>
       <button class="panel-done" id="panel-done"><span>Show results</span></button>
     </aside>
@@ -69,6 +76,7 @@
           <span><i class="sw bonus"></i>Bonus</span><span><i class="sw rewards"></i>Rewards</span><span><i class="sw credits"></i>Credits</span><span><i class="sw fee"></i>Fee</span>
         </div>
       </div>
+      <button class="setbar" id="setbar" aria-controls="panel"></button>
       <div class="summary" id="summary"></div>
       <div class="table-wrap">
         <table class="grid" id="grid">
