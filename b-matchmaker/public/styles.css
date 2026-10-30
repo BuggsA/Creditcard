@@ -168,3 +168,13 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 600; letter-spacing: -0.02e
   .floaters .mini { width: 110px; }
 }
 .note { font-size: 14px; color: #8a5a00; background: #fbf0d9; border-radius: 12px; padding: 8px 12px; margin: 10px 0 0 !important; }
+
+/* SVG icons */
+.i { width: 1.1em; height: 1.1em; vertical-align: -0.18em; flex: none; }
+.opt .e { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: var(--cream); color: var(--coral); }
+.opt .e .i { width: 24px; height: 24px; }
+.opt[aria-pressed="true"] .e { background: var(--coral); color: #fff; }
+.kv .cat { display: inline-flex; align-items: center; gap: 8px; }
+.kv .cat .i { width: 17px; height: 17px; color: var(--coral); }
+.kv .yes { color: var(--sage-ink); display: inline-flex; }
+.pill .i { width: 15px; height: 15px; }

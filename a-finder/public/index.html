@@ -14,7 +14,7 @@
 <body>
   <header class="topbar">
     <div class="wrap topbar-inner">
-      <a href="#/" class="logo"><span class="logo-mark">◆</span> CardCompass</a>
+      <a href="#/" class="logo"><span class="logo-mark" id="logo-mark"></span> CardCompass</a>
       <nav class="topnav">
         <a href="#/cards">Browse cards</a>
         <a href="#/compare" id="nav-compare">Compare <span class="count" id="nav-count" hidden></span></a>
@@ -33,6 +33,6 @@
 
   <script src="cards.js"></script>
   <script src="app.js"></script>
-  <script>document.getElementById("asof").textContent = CC.AS_OF;</script>
+  <script>document.getElementById("asof").textContent = CC.AS_OF; document.getElementById("logo-mark").innerHTML = CC.icon("compass");</script>
 </body>
 </html>

@@ -49,13 +49,13 @@
       <section class="hero">
         <h1>Find the card that fits<br/>how you spend.</h1>
         <p>Pick the perks you care about. We'll show you the cards that deliver them — in plain English.</p>
-        <form class="search" id="search"><input type="search" name="q" placeholder="Search a card or issuer, e.g. “Harbor” or “hotel”" aria-label="Search cards" /></form>
+        <form class="search" id="search"><input type="search" name="q" placeholder="Search a card or issuer, e.g. “Sapphire” or “hotel”" aria-label="Search cards" /></form>
       </section>
       <div class="section-label">Or choose what matters to you</div>
       <div class="tiles">
         ${Object.entries(BENEFITS).map(([k, b]) => `
           <button class="tile" data-k="${k}" aria-pressed="false">
-            <span class="ico">${b.icon}</span><strong>${b.label}</strong><small>${b.blurb}</small>
+            <span class="ico">${CC.icon(b.icon)}</span><strong>${b.label}</strong><small>${b.blurb}</small>
           </button>`).join("")}
       </div>
       <div class="home-cta"><button class="btn" id="go">Show all ${CARDS.length} cards →</button></div>`;
@@ -214,7 +214,7 @@
           <div>
             <h3><a href="#/card/${c.id}">${esc(c.name)}</a></h3>
             <div class="meta">${esc(c.issuer)} · ${CREDIT_TIERS[c.creditTier]} credit</div>
-            ${matched.length ? `<div class="matchline">★ Matches: <b>${matched.join(" · ")}</b></div>` : ""}
+            ${matched.length ? `<div class="matchline">${CC.icon("star")} Matches: <b>${matched.join(" · ")}</b></div>` : ""}
           </div>
           <label class="cmp-toggle"><input type="checkbox" data-cmp="${c.id}" ${compare.includes(c.id) ? "checked" : ""}/> Compare</label>
         </div>
@@ -281,8 +281,8 @@
           <p class="meta">${esc(CC.bonusSentence(c))}.</p>
           ${c.offerNote ? `<p class="note">${esc(c.offerNote)}</p>` : ""}
           <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px">
-            <button class="btn" id="cmp-btn">${compare.includes(c.id) ? "✓ Added to compare" : "+ Add to compare"}</button>
-            <a class="btn ghost" href="${CC.issuerUrl(c)}" target="_blank" rel="noopener">Check current offer at ${esc(c.issuer)} ↗</a>
+            <button class="btn" id="cmp-btn">${compare.includes(c.id) ? `${CC.icon("check")} Added to compare` : "+ Add to compare"}</button>
+            <a class="btn ghost" href="${CC.issuerUrl(c)}" target="_blank" rel="noopener">Check current offer at ${esc(c.issuer)} ${CC.icon("external")}</a>
           </div>
         </div>
       </section>
@@ -290,14 +290,14 @@
         <div class="panel">
           <h2>Who it's for</h2>
           <ul class="fitlist">
-            ${c.bestFor.map((x) => `<li><span class="y">✓</span>${esc(x)}</li>`).join("")}
-            ${c.notFor.map((x) => `<li><span class="n">✕</span>Not ideal: ${esc(x)}</li>`).join("")}
+            ${c.bestFor.map((x) => `<li><span class="y">${CC.icon("check")}</span>${esc(x)}</li>`).join("")}
+            ${c.notFor.map((x) => `<li><span class="n">${CC.icon("x")}</span>Not ideal: ${esc(x)}</li>`).join("")}
           </ul>
         </div>
         <div class="panel">
           <h2>How you earn</h2>
           <table class="tbl">
-            ${cats.map((k) => `<tr><td>${CATEGORIES[k].icon} ${CATEGORIES[k].label}</td><td>${CC.rateLabel(c, k)}</td><td>${(CC.rate(c, k) * c.pointValue).toFixed(1)}¢ per $1</td></tr>`).join("")}
+            ${cats.map((k) => `<tr><td><span class="cat">${CC.icon(CATEGORIES[k].icon)} ${CATEGORIES[k].label}</span></td><td>${CC.rateLabel(c, k)}</td><td>${(CC.rate(c, k) * c.pointValue).toFixed(1)}¢ per $1</td></tr>`).join("")}
           </table>
           ${c.earnNote ? `<p class="verified">${esc(c.earnNote)}</p>` : ""}
         </div>
@@ -323,7 +323,7 @@
       </section>`;
     app.querySelector("#cmp-btn").addEventListener("click", (e) => {
       toggleCompare(c.id);
-      e.target.textContent = compare.includes(c.id) ? "✓ Added to compare" : "+ Add to compare";
+      e.currentTarget.innerHTML = compare.includes(c.id) ? `${CC.icon("check")} Added to compare` : "+ Add to compare";
     });
     window.scrollTo(0, 0);
   }
@@ -354,7 +354,7 @@
         ["Spend required", (c) => (c.bonus.amount ? `${usd(c.bonus.spend)} in ${c.bonus.months} mo` : "—")],
       ]],
       ["Earning (cents back per $1)", Object.keys(CATEGORIES).map((k) => [
-        `${CATEGORIES[k].icon} ${CATEGORIES[k].label}`, (c) => +(CC.rate(c, k) * c.pointValue).toFixed(1), "high", (v) => v + "¢",
+        CATEGORIES[k].label, (c) => +(CC.rate(c, k) * c.pointValue).toFixed(1), "high", (v) => v + "¢",
       ])],
       ["Credits & perks", [
         ["Credits (advertised)", (c) => CC.creditsFace(c), "high", (v) => (v ? usd(v) : "None")],

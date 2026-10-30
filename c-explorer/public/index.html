@@ -13,10 +13,10 @@
 </head>
 <body>
   <header class="top">
-    <div class="brand"><span class="glyph">▮▮▮</span> LEDGER</div>
+    <div class="brand"><svg class="i glyph" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="13" width="4.5" height="8" rx="1" fill="currentColor"/><rect x="9.75" y="8" width="4.5" height="13" rx="1" fill="currentColor"/><rect x="16.5" y="3" width="4.5" height="18" rx="1" fill="currentColor"/></svg> LEDGER</div>
     <div class="tagline">What is each card <em>actually</em> worth to you?</div>
-    <button class="btn-share" id="share" title="Copy a link to this exact setup"><span class="lg">Share setup</span><span class="sm">Share</span></button>
-    <button class="btn-ghost" id="toggle-panel" aria-controls="panel" aria-expanded="false"><span class="ico" aria-hidden="true">⚙</span> <span class="lg2">Spending &amp; filters</span><span class="sm2">Filters</span><span class="badge" id="filter-badge" hidden></span></button>
+    <button class="btn-share" id="share" title="Copy a link to this exact setup"><span id="share-ico" aria-hidden="true"></span><span class="lg">Share setup</span><span class="sm">Share</span></button>
+    <button class="btn-ghost" id="toggle-panel" aria-controls="panel" aria-expanded="false"><span class="ico" id="filters-ico" aria-hidden="true"></span> <span class="lg2">Spending &amp; filters</span><span class="sm2">Filters</span><span class="badge" id="filter-badge" hidden></span></button>
   </header>
 
   <div class="layout">
@@ -103,6 +103,6 @@
 
   <script src="cards.js"></script>
   <script src="app.js"></script>
-  <script>document.getElementById("asof").textContent = CC.AS_OF;</script>
+  <script>document.getElementById("asof").textContent = CC.AS_OF; document.getElementById("filters-ico").innerHTML = CC.icon("sliders"); document.getElementById("share-ico").innerHTML = CC.icon("link");</script>
 </body>
 </html>

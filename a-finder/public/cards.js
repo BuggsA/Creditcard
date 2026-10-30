@@ -13,27 +13,66 @@
   const AS_OF = "Oct 30, 2026";
 
   const CATEGORIES = {
-    dining: { label: "Dining", icon: "🍽" },
-    groceries: { label: "Groceries", icon: "🛒" },
-    hotels: { label: "Hotels", icon: "🛏" },
-    airfare: { label: "Flights", icon: "✈" },
-    gas: { label: "Gas", icon: "⛽" },
-    streaming: { label: "Streaming", icon: "📺" },
-    other: { label: "Everything else", icon: "💳" },
+    dining: { label: "Dining", icon: "dining" },
+    groceries: { label: "Groceries", icon: "groceries" },
+    hotels: { label: "Hotels", icon: "bed" },
+    airfare: { label: "Flights", icon: "plane" },
+    gas: { label: "Gas", icon: "gas" },
+    streaming: { label: "Streaming", icon: "streaming" },
+    other: { label: "Everything else", icon: "card" },
   };
 
+  /*
+   * Line icons (24×24, drawn with the current text color) used instead of emoji.
+   * CC.icon("name") returns an inline <svg>; style size/color with the .i class.
+   */
+  const ICONS = {
+    dining: '<path d="M5 3v5a3 3 0 0 0 6 0V3M8 3v18"/><path d="M18 21V3c-2.2 1.4-3.5 4-3.5 7.5 0 1.4 1.1 2.5 2.5 2.5h1"/>',
+    groceries: '<path d="M3 4h2.5l2.2 11.2a1.5 1.5 0 0 0 1.5 1.3h8.6a1.5 1.5 0 0 0 1.5-1.2L21 8H6.4"/><circle cx="9.5" cy="20" r="1.2"/><circle cx="17.5" cy="20" r="1.2"/>',
+    bed: '<path d="M3 19V5M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6"/><circle cx="7" cy="11" r="2"/>',
+    plane: '<path d="M21 15.5 13.5 11V5.5a1.5 1.5 0 0 0-3 0V11L3 15.5v2l7.5-2.5v4l-2 1.5V22l3.5-1 3.5 1v-1.5l-2-1.5v-4l7.5 2.5z"/>',
+    gas: '<path d="M4 21V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M3 21h12M4 10h10"/><path d="M14 8h2a2 2 0 0 1 2 2v6.5a1.5 1.5 0 0 0 3 0V8l-3-3"/>',
+    streaming: '<rect x="3" y="4.5" width="18" height="12.5" rx="2"/><path d="M8 21h8M10.5 8.4v4.7l4-2.35z"/>',
+    card: '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19M6 15h4"/>',
+    globe: '<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.6 3.8 5.6 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.6-3.8-9S9.5 5.6 12 3z"/>',
+    gift: '<rect x="3.5" y="8" width="17" height="4" rx="1"/><path d="M5 12v8h14v-8M12 8v12M12 8C10.5 4.5 6.5 4 6.5 6.5S9 8 12 8zm0 0c1.5-3.5 5.5-4 5.5-1.5S15 8 12 8z"/>',
+    compass: '<circle cx="12" cy="12" r="9"/><path d="m15.5 8.5-2 5-5 2 2-5z"/>',
+    lounge: '<path d="M5 11V8a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/><path d="M3 13a2 2 0 0 1 4 0v2h10v-2a2 2 0 0 1 4 0v4H3zM5 17v2M19 17v2"/>',
+    cash: '<rect x="2.5" y="6" width="19" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/><path d="M6 9.5v5M18 9.5v5"/>',
+    tag: '<path d="M3 11.5v-7A1.5 1.5 0 0 1 4.5 3h7l9.5 9.5-8.5 8.5z"/><circle cx="8" cy="8" r="1.5"/>',
+    percent: '<path d="M19 5 5 19"/><circle cx="7" cy="7" r="2.5"/><circle cx="17" cy="17" r="2.5"/>',
+    trend: '<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+    luggage: '<rect x="5" y="7" width="14" height="13" rx="2"/><path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7M9 11v5M15 11v5M8 20v1M16 20v1"/>',
+    home: '<path d="M4 11 12 4l8 7v9H4z"/><path d="M10 20v-5h4v5"/>',
+    coins: '<ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v6c0 1.7 3.1 3 7 3s7-1.3 7-3V6M5 12v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6"/>',
+    gem: '<path d="M6 3h12l3 6-9 12L3 9z"/><path d="M3 9h18M12 21 8.5 9 12 3l3.5 6z"/>',
+    sprout: '<path d="M12 21v-9"/><path d="M12 12C12 8 9 6 5 6c0 4 3 6 7 6zm0 2c0-3.5 2.5-5.5 6.5-5.5 0 3.5-2.5 5.5-6.5 5.5z"/>',
+    "check-circle": '<circle cx="12" cy="12" r="9"/><path d="m8 12.5 2.8 2.8 5.7-5.8"/>',
+    star: '<path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/>',
+    question: '<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.5v.7M12 17h.01"/>',
+    sliders: '<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>',
+    link: '<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+    check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+    x: '<path d="M6 6l12 12M18 6 6 18"/>',
+    external: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+    heart: '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
+    bars: '<rect x="3" y="13" width="4.5" height="8" rx="1" fill="currentColor" stroke="none"/><rect x="9.75" y="8" width="4.5" height="13" rx="1" fill="currentColor" stroke="none"/><rect x="16.5" y="3" width="4.5" height="18" rx="1" fill="currentColor" stroke="none"/>',
+  };
+  const icon = (name, cls = "") =>
+    `<svg class="i${cls ? " " + cls : ""}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${ICONS[name] || ""}</svg>`;
+
   const BENEFITS = {
-    signup_bonus: { label: "Sign-up bonus", icon: "🎁", blurb: "Big reward for new cardholders" },
-    hotel_credit: { label: "Hotel credit", icon: "🛏", blurb: "Hotel credits or free nights" },
-    travel_points: { label: "Travel points", icon: "🧭", blurb: "Points & miles for trips" },
-    airline_perks: { label: "Airline perks", icon: "✈", blurb: "Free bags, priority boarding" },
-    lounge: { label: "Airport lounges", icon: "🛋", blurb: "Relax before your flight" },
-    cash_back: { label: "Cash back", icon: "💵", blurb: "Simple money back" },
-    dining_groceries: { label: "Dining & groceries", icon: "🍽", blurb: "Bonus rewards on food" },
-    no_annual_fee: { label: "No annual fee", icon: "0", blurb: "Costs nothing to keep" },
-    intro_apr: { label: "0% intro APR", icon: "%", blurb: "Pay off purchases over time" },
-    no_ftf: { label: "No foreign fees", icon: "🌍", blurb: "Use it abroad for free" },
-    build_credit: { label: "Build credit", icon: "📈", blurb: "Easier approval, grow your score" },
+    signup_bonus: { label: "Sign-up bonus", icon: "gift", blurb: "Big reward for new cardholders" },
+    hotel_credit: { label: "Hotel credit", icon: "bed", blurb: "Hotel credits or free nights" },
+    travel_points: { label: "Travel points", icon: "compass", blurb: "Points & miles for trips" },
+    airline_perks: { label: "Airline perks", icon: "plane", blurb: "Free bags, priority boarding" },
+    lounge: { label: "Airport lounges", icon: "lounge", blurb: "Relax before your flight" },
+    cash_back: { label: "Cash back", icon: "cash", blurb: "Simple money back" },
+    dining_groceries: { label: "Dining & groceries", icon: "dining", blurb: "Bonus rewards on food" },
+    no_annual_fee: { label: "No annual fee", icon: "tag", blurb: "Costs nothing to keep" },
+    intro_apr: { label: "0% intro APR", icon: "percent", blurb: "Pay off purchases over time" },
+    no_ftf: { label: "No foreign fees", icon: "globe", blurb: "Use it abroad for free" },
+    build_credit: { label: "Build credit", icon: "trend", blurb: "Easier approval, grow your score" },
   };
 
   const PERKS = {
@@ -482,7 +521,7 @@
   }
 
   window.CC = {
-    AS_OF, CATEGORIES, BENEFITS, PERKS, CREDIT_TIERS, REWARD_TYPES, CARDS, DEFAULT_SPEND,
+    AS_OF, ICONS, icon, CATEGORIES, BENEFITS, PERKS, CREDIT_TIERS, REWARD_TYPES, CARDS, DEFAULT_SPEND,
     usd, bonusValue, bonusLabel, bonusSentence, rate, rateLabel, creditsValue, creditsFace, firstYearFee,
     yearlyRewards, firstYearValue, ongoingValue, topEarn, matches, highlights,
     issuerUrl: (c) => ISSUER_URLS[c.issuer],

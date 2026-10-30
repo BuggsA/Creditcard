@@ -289,3 +289,18 @@ details.sub[open] summary { margin-bottom: 8px; }
 .real { font-style: normal; color: var(--muted); font-size: 11px; }
 .onote { font-size: 12px; color: #fbbf24; margin: 10px 0 6px; line-height: 1.4; }
 a.issuer { display: inline-block; margin-top: 8px; color: var(--lime); font-size: 12px; }
+
+/* SVG icons */
+.i { width: 1.15em; height: 1.15em; vertical-align: -0.2em; flex: none; }
+.brand { display: flex; align-items: center; gap: 8px; }
+.brand .glyph { color: var(--lime); width: 20px; height: 20px; margin: 0; }
+.btn-share, .btn-ghost { display: inline-flex; align-items: center; gap: 6px; }
+.btn-share .i, .btn-ghost .i { width: 16px; height: 16px; }
+.btn-ghost .ico { display: inline-flex; color: var(--lime); }
+#share-ico { display: inline-flex; }
+.slider .ic { display: inline-flex; color: var(--muted); }
+.slider .ic .i { width: 17px; height: 17px; }
+.earnrow > span:first-child { display: inline-flex; align-items: center; gap: 6px; }
+.earnrow .i { width: 14px; height: 14px; color: var(--muted); }
+.kv .yes { color: var(--lime); display: inline-flex; }
+a.issuer .i { width: 13px; height: 13px; vertical-align: -0.15em; }
