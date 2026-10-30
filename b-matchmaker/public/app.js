@@ -16,26 +16,26 @@
     {
       id: "fee", title: "How do you feel about an annual fee?", hint: "Some cards charge one but give back more than they cost.", stack: true,
       options: [
-        { v: "0", e: "🙅", label: "I only want free cards", sub: "$0 annual fee, always" },
-        { v: "100", e: "🤔", label: "Up to about $100 is fine", sub: "If the rewards clearly cover it" },
-        { v: "any", e: "✨", label: "Whatever it takes", sub: "Premium perks are worth paying for" },
+        { v: "0", e: "tag", label: "I only want free cards", sub: "$0 annual fee, always" },
+        { v: "100", e: "coins", label: "Up to about $100 is fine", sub: "If the rewards clearly cover it" },
+        { v: "any", e: "gem", label: "Whatever it takes", sub: "Premium perks are worth paying for" },
       ],
     },
     {
       id: "credit", title: "How would you describe your credit?", hint: "Just a rough idea — we never check your credit.", stack: true,
       options: [
-        { v: "fair", e: "🌱", label: "Still building it", sub: "New to credit, or rebuilding" },
-        { v: "good", e: "👍", label: "Pretty good", sub: "Usually on time, a few years of history" },
-        { v: "excellent", e: "🏆", label: "Excellent", sub: "Long history, never missed a payment" },
-        { v: "unsure", e: "🤷", label: "Honestly not sure", sub: "We'll stick to easier approvals" },
+        { v: "fair", e: "sprout", label: "Still building it", sub: "New to credit, or rebuilding" },
+        { v: "good", e: "check-circle", label: "Pretty good", sub: "Usually on time, a few years of history" },
+        { v: "excellent", e: "star", label: "Excellent", sub: "Long history, never missed a payment" },
+        { v: "unsure", e: "question", label: "Honestly not sure", sub: "We'll stick to easier approvals" },
       ],
     },
     {
       id: "travel", title: "How often do you travel?", hint: "Flights or hotel stays — work or fun.", stack: true,
       options: [
-        { v: "rarely", e: "🏡", label: "Rarely", sub: "Mostly staying close to home" },
-        { v: "sometimes", e: "🧳", label: "A few trips a year", sub: "Holidays and the odd weekend away" },
-        { v: "often", e: "🛫", label: "All the time", sub: "I know my seat preferences by heart" },
+        { v: "rarely", e: "home", label: "Rarely", sub: "Mostly staying close to home" },
+        { v: "sometimes", e: "luggage", label: "A few trips a year", sub: "Holidays and the odd weekend away" },
+        { v: "often", e: "plane", label: "All the time", sub: "I know my seat preferences by heart" },
       ],
     },
   ];
@@ -148,7 +148,7 @@
         <h1>${q.title}</h1>
         <p class="hint">${q.hint}</p>
         <div class="opts ${q.stack ? "stack" : ""}">
-          ${q.options.map((o) => `<button class="opt" data-v="${o.v}" aria-pressed="${isOn(o.v)}"><span class="e">${o.e}</span><span>${o.label}${o.sub ? `<small>${o.sub}</small>` : ""}</span></button>`).join("")}
+          ${q.options.map((o) => `<button class="opt" data-v="${o.v}" aria-pressed="${isOn(o.v)}"><span class="e">${CC.icon(o.e)}</span><span>${o.label}${o.sub ? `<small>${o.sub}</small>` : ""}</span></button>`).join("")}
         </div>
         <div class="q-nav">
           <button class="back" id="back">← Back</button>
@@ -283,10 +283,10 @@
         <div class="kv"><span><strong>Year one total</strong></span><span>${usd(CC.firstYearValue(c, spend))}</span></div>
       </div>
       ${c.bonus.amount || c.offerNote ? `<div class="dsec"><h3>Welcome bonus</h3><p>${esc(CC.bonusSentence(c))}.</p>${c.offerNote ? `<p class="note">${esc(c.offerNote)}</p>` : ""}</div>` : ""}
-      <div class="dsec"><h3>How you earn</h3>${cats.map((k) => `<div class="kv"><span>${CATEGORIES[k].icon} ${CATEGORIES[k].label}</span><span>${CC.rateLabel(c, k)}</span></div>`).join("")}${c.earnNote ? `<p style="font-size:14px;color:var(--ink-soft);margin-top:8px">${esc(c.earnNote)}</p>` : ""}</div>
+      <div class="dsec"><h3>How you earn</h3>${cats.map((k) => `<div class="kv"><span class="cat">${CC.icon(CATEGORIES[k].icon)} ${CATEGORIES[k].label}</span><span>${CC.rateLabel(c, k)}</span></div>`).join("")}${c.earnNote ? `<p style="font-size:14px;color:var(--ink-soft);margin-top:8px">${esc(c.earnNote)}</p>` : ""}</div>
       ${c.credits.length || c.perks.length ? `<div class="dsec"><h3>Extras</h3>
         ${c.credits.map((x) => `<div class="kv"><span>${esc(x.label)}<br/><small>${esc(x.ease)}</small></span><span>${usd(x.amount)}</span></div>`).join("")}
-        ${c.perks.map((p) => `<div class="kv"><span>${PERKS[p]}</span><span>✓</span></div>`).join("")}</div>` : ""}
+        ${c.perks.map((p) => `<div class="kv"><span>${PERKS[p]}</span><span class="yes">${CC.icon("check")}</span></div>`).join("")}</div>` : ""}
       <div class="dsec"><h3>The fine print</h3>
         <div class="kv"><span>Intro APR</span><span>${c.introApr ? `0% for ${c.introApr} months` : "None"}</span></div>
         ${c.secured ? `<div class="kv"><span>Security deposit</span><span>${esc(c.secured)}</span></div>` : ""}
@@ -295,7 +295,7 @@
         <div class="kv"><span>Credit needed</span><span>${CREDIT_TIERS[c.creditTier]}</span></div>
       </div>
       <div class="row-btns">
-        <a class="pill coral" href="${CC.issuerUrl(c)}" target="_blank" rel="noopener" style="text-decoration:none">Check offer at ${esc(c.issuer)} ↗</a>
+        <a class="pill coral" href="${CC.issuerUrl(c)}" target="_blank" rel="noopener" style="text-decoration:none">Check offer at ${esc(c.issuer)} ${CC.icon("external")}</a>
         ${top && top.id !== c.id ? `<button class="pill" data-vs2="${top.id}|${c.id}">Compare with my top pick</button>` : ""}
       </div>
       <p style="font-size:13px;color:var(--ink-soft);margin-top:16px">Checked ${CC.AS_OF}. Offers change often and may differ for you.</p>

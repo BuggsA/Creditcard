@@ -148,7 +148,7 @@
     $("#presets").innerHTML = Object.keys(PRESETS).map((k) => `<button data-p="${k}">${k}</button>`).join("");
     $("#sliders").innerHTML = Object.entries(CATEGORIES).map(([k, cat]) => `
       <div class="slider">
-        <span class="ic">${cat.icon}</span>
+        <span class="ic">${CC.icon(cat.icon)}</span>
         <span class="lbl">${cat.label}</span>
         <input type="range" min="0" max="${k === "other" ? 5000 : 1500}" step="10" data-cat="${k}" aria-label="${cat.label} per month" />
         <input type="number" min="0" step="10" data-num="${k}" aria-label="${cat.label} dollars per month" />
@@ -267,7 +267,12 @@
   function share() {
     persist();
     const btn = $("#share");
-    const done = () => { btn.textContent = "Link copied ✓"; btn.classList.add("done"); setTimeout(() => { btn.textContent = "Share setup"; btn.classList.remove("done"); }, 1800); };
+    const original = btn.innerHTML;
+    const done = () => {
+      btn.innerHTML = `${CC.icon("check")} <span>Copied</span>`;
+      btn.classList.add("done");
+      setTimeout(() => { btn.innerHTML = original; btn.classList.remove("done"); }, 1800);
+    };
     try {
       navigator.clipboard.writeText(location.href).then(done, () => prompt("Copy this link:", location.href));
     } catch (e) {
@@ -381,8 +386,8 @@
       ? `<p><b>Groceries:</b> ${state.superstore}% of your grocery spend is at Walmart/Target/Costco, so it earns the base rate here.</p>` : "";
     return `<tr class="expand"><td colspan="9"><div class="xgrid four">
       <div><h4>${hasWallet ? "What it adds to your wallet" : "Where your rewards come from"}</h4>
-        ${per.map(([k, v]) => `<div class="earnrow"><span>${CATEGORIES[k].icon} ${CATEGORIES[k].label}</span><span class="rate">${CC.rateLabel(c, k)}</span><span class="m"><i style="width:${(v / m) * 100}%"></i></span><span class="amt">${usd(v)}</span></div>`).join("")}
-        ${state.abroad ? `<div class="earnrow"><span>🌍 Abroad</span><span class="rate" title="Foreign transaction fee">${c.ftf ? "−" + (c.ftfRate || "3%") : "0%"}</span><span></span><span class="amt">${usd(abroadNet(a))}</span></div>` : ""}
+        ${per.map(([k, v]) => `<div class="earnrow"><span>${CC.icon(CATEGORIES[k].icon)} ${CATEGORIES[k].label}</span><span class="rate">${CC.rateLabel(c, k)}</span><span class="m"><i style="width:${(v / m) * 100}%"></i></span><span class="amt">${usd(v)}</span></div>`).join("")}
+        ${state.abroad ? `<div class="earnrow"><span>${CC.icon("globe")} Abroad</span><span class="rate" title="Foreign transaction fee">${c.ftf ? "−" + (c.ftfRate || "3%") : "0%"}</span><span></span><span class="amt">${usd(abroadNet(a))}</span></div>` : ""}
         ${c.earnNote ? `<div class="kv" style="border:0;color:var(--muted)">${esc(c.earnNote)}</div>` : ""}
       </div>
       <div><h4>Is it worth it?</h4>
@@ -400,12 +405,12 @@
         <div class="kv"><span>Bonus</span><span>${c.bonus.amount ? `${esc(CC.bonusLabel(c))} / ${usd(c.bonus.spend)} in ${c.bonus.months}mo` : "none"}</span></div>
         <div class="kv"><span>Point value</span><span>${c.rewardType === "cashback" ? "cash" : +a.pointValue.toFixed(2) + "¢"}</span></div>
         ${a.credits.map((x) => `<div class="kv"><span>${esc(x.label)}</span><span>${usd(x.amount)}${x.value !== x.amount ? ` <i class="real">≈${usd(x.value)}</i>` : ""}</span></div>`).join("")}
-        ${c.perks.map((p) => `<div class="kv"><span>${PERKS[p]}</span><span>✓</span></div>`).join("")}
+        ${c.perks.map((p) => `<div class="kv"><span>${PERKS[p]}</span><span class="yes">${CC.icon("check")}</span></div>`).join("")}
         <div class="kv"><span>Intro APR</span><span>${c.introApr ? `0% · ${c.introApr}mo` : "—"}</span></div>
         <div class="kv"><span>Foreign fee</span><span>${c.ftf ? (c.ftfRate || "3%") : "none"}</span></div>
         ${c.offerNote ? `<p class="onote">${esc(c.offerNote)}</p>` : ""}
         <div class="xbtns"><button data-have="${c.id}">I already have this</button></div>
-        <a class="issuer" href="${CC.issuerUrl(c)}" target="_blank" rel="noopener">Check current offer at ${esc(c.issuer)} ↗</a>
+        <a class="issuer" href="${CC.issuerUrl(c)}" target="_blank" rel="noopener">Check current offer at ${esc(c.issuer)} ${CC.icon("external")}</a>
       </div>
     </div></td></tr>`;
   }
