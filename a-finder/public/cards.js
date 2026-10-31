@@ -107,6 +107,7 @@
     Citi: "https://www.citi.com/credit-cards/",
     "Wells Fargo": "https://creditcards.wellsfargo.com/",
     Discover: "https://www.discover.com/credit-cards/",
+    "Bank of America": "https://www.bankofamerica.com/credit-cards/",
   };
 
   // Application & bonus rules people ask about most. Issuers don't publish all of these;
@@ -118,6 +119,7 @@
     Citi: "One welcome bonus per card family every 48 months. Citi also limits how often you can apply (about 1 card per 8 days, 2 per 65 days).",
     "Wells Fargo": "Bonus and intro APR may be withheld if you opened another Wells Fargo card in the last 6 months.",
     Discover: "Cashback Match is for new Discover cardmembers only.",
+    "Bank of America": "Often limits new cards to about 2 in 2 months, 3 in 12 months and 4 in 24 months. The bonus may be unavailable if you've had this card in the last 24 months.",
   };
 
   const NETWORK_NOTES = {
@@ -125,6 +127,7 @@
     Mastercard: "Accepted almost everywhere — but not at Costco warehouses (Visa only).",
     Amex: "Not accepted everywhere: less common abroad and at some small businesses. Not accepted at Costco warehouses.",
     Discover: "Limited acceptance outside the U.S. Not accepted at Costco warehouses.",
+    "Visa/Mastercard": "Capital One issues this card on either Visa or Mastercard — check the logo on yours. Both are accepted almost everywhere, but Costco warehouses take only Visa.",
   };
 
   // Credit helper: `value` is what a typical cardholder actually gets out of it
@@ -207,7 +210,7 @@
       notFor: ["People who won't use monthly credits — the fee is $325"],
     },
     {
-      id: "capital-one-venture-x", network: "Visa", name: "Venture X", issuer: "Capital One",
+      id: "capital-one-venture-x", network: "Visa/Mastercard", name: "Venture X", issuer: "Capital One",
       colors: ["#0f172a", "#334155"], annualFee: 395, creditTier: "excellent", rewardType: "points", pointValue: 1.4,
       bonus: { amount: 75000, unit: "miles", spend: 4000, months: 3 },
       earn: { other: 2 },
@@ -221,7 +224,7 @@
       notFor: ["People who won't book through Capital One Travel"],
     },
     {
-      id: "capital-one-venture", network: "Visa", name: "Venture Rewards", issuer: "Capital One",
+      id: "capital-one-venture", network: "Visa/Mastercard", name: "Venture Rewards", issuer: "Capital One",
       colors: ["#1e3a5f", "#3b6ea5"], annualFee: 95, creditTier: "good", rewardType: "points", pointValue: 1.4,
       bonus: { amount: 75000, unit: "miles", spend: 4000, months: 3 },
       offerNote: "Some 2026 offers added a $250–$300 Capital One Travel credit.",
@@ -243,6 +246,40 @@
       perks: [], ftf: false, introApr: 0,
       bestFor: ["3x across five everyday categories for $95", "Families who want points on groceries and gas"],
       notFor: ["Anyone wanting lounge access or premium perks"],
+    },
+
+    {
+      id: "bofa-premium-rewards", network: "Visa", name: "Premium Rewards", issuer: "Bank of America",
+      colors: ["#1e1b4b", "#4338ca"], annualFee: 95, creditTier: "good", rewardType: "points", pointValue: 1,
+      bonus: { amount: 60000, unit: "points", spend: 4000, months: 3 },
+      earn: { airfare: 2, hotels: 2, dining: 2, other: 1.5 },
+      earnNote: "Bank of America Preferred Rewards members earn 25–75% more points.",
+      credits: [cr("airline", 100, "Airline incidental credit", "Seat upgrades, bag fees and in-flight purchases", 75)],
+      perks: ["global_entry"], ftf: false, introApr: 0,
+      bestFor: ["1.5x on everything plus 2x travel and dining", "Bank of America customers — Preferred Rewards boosts earnings"],
+      notFor: ["Transferring points to airlines — it has no transfer partners"],
+    },
+    {
+      id: "wells-fargo-autograph-journey", network: "Visa", name: "Autograph Journey", issuer: "Wells Fargo",
+      colors: ["#3f0d12", "#a1162a"], annualFee: 95, creditTier: "good", rewardType: "points", pointValue: 1,
+      bonus: { amount: 60000, unit: "points", spend: 4000, months: 3 },
+      earn: { hotels: 5, airfare: 4, dining: 3, other: 1 },
+      earnNote: "5x hotels, 4x airlines, 3x other travel and restaurants.",
+      credits: [cr("airline", 50, "Airline credit", "$50 back once a year after a $50+ airline purchase", 45)],
+      perks: ["cell_protection"], ftf: false, introApr: 0,
+      bestFor: ["High rates on hotels and flights booked direct", "A $50 airline credit that halves the fee"],
+      notFor: ["Everyday spending — 1x outside travel and dining"],
+    },
+    {
+      id: "capital-one-ventureone", network: "Visa/Mastercard", name: "VentureOne Rewards", issuer: "Capital One",
+      colors: ["#1e3a5f", "#5b8cc2"], annualFee: 0, creditTier: "good", rewardType: "points", pointValue: 1.4,
+      bonus: { amount: 20000, unit: "miles", spend: 500, months: 3 },
+      offerNote: "Some 2026 offers added a $100 Capital One Travel credit.",
+      earn: { other: 1.25 },
+      earnNote: "5x on hotels and rental cars booked through Capital One Travel.",
+      credits: [], perks: [], ftf: false, introApr: 15,
+      bestFor: ["Travel miles with no annual fee", "No foreign transaction fees abroad"],
+      notFor: ["Maximizing rewards — the $95 Venture earns 2x"],
     },
 
     // ---------- Hotel cards ----------
@@ -285,6 +322,30 @@
       notFor: ["Areas without many Hyatt hotels"],
     },
 
+    {
+      id: "hilton-honors", network: "Amex", name: "Hilton Honors Card", issuer: "American Express",
+      colors: ["#0a2a4a", "#3d7cc9"], annualFee: 0, creditTier: "good", rewardType: "hotel", pointValue: 0.5,
+      bonus: { amount: 70000, unit: "points", spend: 2000, months: 6 },
+      offerNote: "Current limited-time offers pair bonus points with a Free Night Reward; the amount varies — check Amex.",
+      earn: { hotels: 7, dining: 5, groceries: 5, gas: 5, other: 3 },
+      earnNote: "7x at Hilton; 5x at U.S. restaurants, U.S. supermarkets and U.S. gas stations; 3x elsewhere.",
+      credits: [], perks: ["elite_status"], ftf: false, introApr: 0,
+      bestFor: ["Hilton points with no annual fee", "Automatic Hilton Silver status"],
+      notFor: ["Big Hilton perks — the Surpass adds Gold status and credits"],
+    },
+    {
+      id: "ihg-premier", network: "Mastercard", name: "IHG One Rewards Premier", issuer: "Chase",
+      colors: ["#123b2c", "#2f8a5f"], annualFee: 150, creditTier: "good", rewardType: "hotel", pointValue: 0.5,
+      bonus: { amount: 140000, unit: "points", spend: 3000, months: 3 },
+      offerNote: "Reports say the annual fee rose from $99 to $150 in October 2026; some 2026 offers were 175,000 points.",
+      earn: { hotels: 10, airfare: 5, dining: 5, gas: 5, other: 3 },
+      earnNote: "10x at IHG hotels; 5x on other travel, gas stations and restaurants.",
+      credits: [cr("hotel", 200, "Annual free night", "A free night (up to 40,000 points) every anniversary", 150)],
+      perks: ["free_night", "elite_status", "global_entry"], ftf: false, introApr: 0,
+      bestFor: ["IHG regulars — 4th award night free and Platinum status", "A yearly free night that offsets the fee"],
+      notFor: ["People who rarely stay at IHG brands"],
+    },
+
     // ---------- Airline cards ----------
     {
       id: "delta-gold", network: "Amex", name: "Delta SkyMiles Gold", issuer: "American Express",
@@ -309,6 +370,18 @@
       perks: ["free_bag", "priority_boarding", "global_entry"], ftf: false, introApr: 0,
       bestFor: ["United flyers — free first bag for you and a companion", "Two United Club passes every year"],
       notFor: ["People who don't fly United"],
+    },
+
+    {
+      id: "aa-platinum-select", network: "Mastercard", name: "AAdvantage Platinum Select", issuer: "Citi",
+      colors: ["#0b2545", "#8da9c4"], annualFee: 99, firstYearFee: 0, creditTier: "good", rewardType: "airline", pointValue: 1.3,
+      bonus: { amount: 75000, unit: "miles", spend: 3500, months: 4 },
+      offerNote: "Some 2026 offers were 80,000 miles. Citi lists the annual fee rising to $150 on Jan 24, 2027.",
+      earn: { airfare: 2, dining: 2, gas: 2, other: 1 },
+      earnNote: "2x on American Airlines purchases, restaurants and gas stations.",
+      credits: [], perks: ["free_bag", "priority_boarding"], ftf: false, introApr: 0,
+      bestFor: ["American Airlines flyers — free first bag for you and up to 4 companions", "$0 annual fee the first year"],
+      notFor: ["People who don't fly American"],
     },
 
     // ---------- Cash back ----------
@@ -343,7 +416,7 @@
       notFor: ["New purchases you want to pay off slowly — no 0% on purchases"],
     },
     {
-      id: "capital-one-savor", network: "Mastercard", name: "Savor Cash Rewards", issuer: "Capital One",
+      id: "capital-one-savor", network: "Visa/Mastercard", name: "Savor Cash Rewards", issuer: "Capital One",
       colors: ["#4a1d1d", "#b5543a"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
       bonus: { amount: 200, unit: "usd", spend: 500, months: 3 },
       earn: { dining: 3, groceries: 3, streaming: 3, other: 1 },
@@ -353,7 +426,7 @@
       notFor: ["Big spenders on gas or travel"],
     },
     {
-      id: "capital-one-quicksilver", network: "Mastercard", name: "Quicksilver", issuer: "Capital One",
+      id: "capital-one-quicksilver", network: "Visa/Mastercard", name: "Quicksilver", issuer: "Capital One",
       colors: ["#3f3f46", "#a1a1aa"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
       bonus: { amount: 200, unit: "usd", spend: 500, months: 3 },
       earn: { other: 1.5 },
@@ -384,6 +457,71 @@
       notFor: ["Big grocery spenders — groceries earn 1x"],
     },
 
+    {
+      id: "chase-freedom-flex", network: "Mastercard", name: "Freedom Flex", issuer: "Chase",
+      colors: ["#0f2a52", "#2f6fd6"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
+      bonus: { amount: 200, unit: "usd", spend: 500, months: 3 },
+      earn: { dining: 3, other: 1 },
+      earnNote: "5% on rotating quarterly categories (up to $1,500 a quarter, activation required) — counted as a realistic ≈$100/yr. 3% on dining and drugstores; 5% on Chase Travel.",
+      credits: [cr("other", 240, "Rotating 5% categories", "Extra 4% on up to $1,500 a quarter in categories you activate (e.g. dining, groceries, gas, Amazon)", 100)], perks: ["cell_protection"], ftf: true, introApr: 15,
+      bestFor: ["People happy to activate 5% categories each quarter", "Pairing with a Sapphire card for more value"],
+      notFor: ["Anyone who wants zero effort — use Freedom Unlimited", "Use abroad (3% foreign fee)"],
+    },
+    {
+      id: "discover-it-cash-back", network: "Discover", name: "Discover it Cash Back", issuer: "Discover",
+      colors: ["#7c2d12", "#fb923c"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
+      bonus: { amount: 1, unit: "match", spend: 0, months: 12, value: 300, label: "Cashback Match" },
+      offerNote: "Cashback Match doubles all the cash back you earn in your first year; we estimate about $300 for typical spending.",
+      earn: { other: 1 },
+      earnNote: "5% on rotating quarterly categories (up to $1,500 a quarter, activation required) — counted as a realistic ≈$100/yr.",
+      credits: [cr("other", 240, "Rotating 5% categories", "Extra 4% on up to $1,500 a quarter in categories you activate (e.g. dining, groceries, gas, Amazon)", 100)], perks: [], ftf: false, introApr: 15,
+      bestFor: ["First-year Cashback Match doubles your rewards", "No foreign transaction fees"],
+      notFor: ["Travelers abroad — Discover acceptance is limited outside the U.S."],
+    },
+    {
+      id: "amex-blue-cash-everyday", network: "Amex", name: "Blue Cash Everyday", issuer: "American Express",
+      colors: ["#0c4a6e", "#38bdf8"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
+      bonus: { amount: 200, unit: "usd", spend: 2000, months: 6 },
+      earn: { groceries: 3, gas: 3, other: 1 },
+      earnNote: "3% at U.S. supermarkets, U.S. gas stations and U.S. online retail, each on up to $6,000 a year, then 1%.",
+      caps: { groceries: 6000, gas: 6000 },
+      credits: [], perks: ["purchase_protection"], ftf: true, ftfRate: "2.7%", introApr: 15,
+      bestFor: ["Grocery and gas rewards with no annual fee", "0% intro APR for 15 months"],
+      notFor: ["Families spending $500+/month on groceries — Blue Cash Preferred earns more"],
+    },
+    {
+      id: "bofa-customized-cash", network: "Visa", name: "Customized Cash Rewards", issuer: "Bank of America",
+      colors: ["#7f1d1d", "#dc2626"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
+      bonus: { amount: 200, unit: "usd", spend: 1000, months: 3 },
+      earn: { dining: 3, groceries: 2, other: 1 },
+      earnNote: "3% in a category you choose (we assume dining; also gas, online shopping, travel, drugstores or home improvement) and 2% at grocery stores and wholesale clubs, on up to $2,500 combined a quarter. 6% in the choice category the first year.",
+      caps: { dining: 6000, groceries: 4000 },
+      credits: [], perks: [], ftf: true, introApr: 15,
+      bestFor: ["Picking your own 3% category — change it monthly", "Bank of America Preferred Rewards members (up to 75% more)"],
+      notFor: ["Big spenders — the $2,500 quarterly cap fills quickly"],
+    },
+    {
+      id: "bofa-travel-rewards", network: "Visa", name: "Travel Rewards", issuer: "Bank of America",
+      colors: ["#172554", "#3b82f6"], annualFee: 0, creditTier: "good", rewardType: "points", pointValue: 1,
+      bonus: { amount: 25000, unit: "points", spend: 1000, months: 3 },
+      earn: { other: 1.5 },
+      earnNote: "1.5x on everything; 3x on travel booked through Bank of America Travel. Points are worth 1¢ toward travel.",
+      credits: [], perks: [], ftf: false, introApr: 15,
+      bestFor: ["Simple travel rewards with no annual fee", "No foreign transaction fees"],
+      notFor: ["Transferring points to airlines or hotels"],
+    },
+    {
+      id: "costco-anywhere-visa", network: "Visa", name: "Costco Anywhere Visa", issuer: "Citi",
+      colors: ["#1f2937", "#e11d48"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
+      bonus: { amount: 0, unit: "usd", spend: 0, months: 0 },
+      earn: { gas: 4, dining: 3, airfare: 3, hotels: 3, other: 1 },
+      earnNote: "4% on gas and EV charging (up to $7,000 a year), 3% on dining and travel, 2% at Costco. Rewards arrive once a year as a certificate redeemable at Costco.",
+      caps: { gas: 7000 },
+      credits: [], perks: ["purchase_protection"], ftf: false, introApr: 0,
+      bestFor: ["Costco members — 2% at Costco, and it works in Costco warehouses (Visa only)", "Big gas spenders — 4% on up to $7,000 a year"],
+      notFor: ["Non-members — it requires a Costco membership ($65+/yr)", "Getting rewards quickly — paid out once a year"],
+    },
+
     // ---------- 0% APR & building credit ----------
     {
       id: "wells-fargo-reflect", network: "Visa", name: "Reflect", issuer: "Wells Fargo",
@@ -408,7 +546,7 @@
       notFor: ["Anyone who can't set aside a $200 deposit"],
     },
     {
-      id: "capital-one-platinum-secured", network: "Mastercard", name: "Platinum Secured", issuer: "Capital One",
+      id: "capital-one-platinum-secured", network: "Visa/Mastercard", name: "Platinum Secured", issuer: "Capital One",
       colors: ["#334155", "#64748b"], annualFee: 0, creditTier: "fair", rewardType: "cashback", pointValue: 1,
       bonus: { amount: 0, unit: "usd", spend: 0, months: 0 },
       earn: { other: 0 },
@@ -416,6 +554,25 @@
       credits: [], perks: ["limit_review"], ftf: false, introApr: 0,
       bestFor: ["Starting or rebuilding credit with a deposit as low as $49"],
       notFor: ["Earning rewards — it has none"],
+    },
+    {
+      id: "chase-freedom-rise", network: "Visa", name: "Freedom Rise", issuer: "Chase",
+      colors: ["#0b3a6e", "#60a5fa"], annualFee: 0, creditTier: "fair", rewardType: "cashback", pointValue: 1,
+      bonus: { amount: 0, unit: "usd", spend: 0, months: 0 },
+      earn: { other: 1.5 },
+      earnNote: "Approval odds improve if you have a Chase checking account.",
+      credits: [], perks: ["limit_review"], ftf: true, introApr: 0,
+      bestFor: ["A first card with no credit history — 1.5% back on everything", "Chase checking customers"],
+      notFor: ["Use abroad (3% foreign fee)"],
+    },
+    {
+      id: "capital-one-quicksilverone", network: "Visa/Mastercard", name: "QuicksilverOne", issuer: "Capital One",
+      colors: ["#27272a", "#71717a"], annualFee: 39, creditTier: "fair", rewardType: "cashback", pointValue: 1,
+      bonus: { amount: 0, unit: "usd", spend: 0, months: 0 },
+      earn: { other: 1.5 },
+      credits: [], perks: ["limit_review"], ftf: false, introApr: 0,
+      bestFor: ["Fair credit — 1.5% back on everything", "No foreign transaction fees"],
+      notFor: ["Good credit — the no-fee Quicksilver earns the same"],
     },
   ];
 
@@ -436,7 +593,13 @@
   }
   function bonusSentence(c) {
     if (!c.bonus.amount) return "No sign-up bonus";
-    return `Earn ${bonusLabel(c)}${c.bonus.unit === "usd" ? "" : ` (≈${usd(bonusValue(c))})`} after spending ${usd(c.bonus.spend)} in ${c.bonus.months} months`;
+    return `Earn ${bonusLabel(c)}${c.bonus.unit === "usd" ? "" : ` (≈${usd(bonusValue(c))})`} ${bonusTerms(c)}`;
+  }
+  // "after spending $4,000 in 3 months", or "in your first year" for bonuses with no spending requirement.
+  function bonusTerms(c, short = false) {
+    if (!c.bonus.amount) return "";
+    if (!c.bonus.spend) return "in your first year";
+    return short ? `after ${usd(c.bonus.spend)} in ${c.bonus.months} mo` : `after spending ${usd(c.bonus.spend)} in ${c.bonus.months} months`;
   }
   function rate(c, cat) {
     return c.earn[cat] ?? c.earn.other ?? 1;
@@ -526,7 +689,7 @@
 
   window.CC = {
     AS_OF, ICONS, icon, CATEGORIES, BENEFITS, PERKS, CREDIT_TIERS, REWARD_TYPES, CARDS, DEFAULT_SPEND,
-    usd, bonusValue, bonusLabel, bonusSentence, rate, rateLabel, creditsValue, creditsFace, firstYearFee,
+    usd, bonusValue, bonusLabel, bonusSentence, bonusTerms, rate, rateLabel, creditsValue, creditsFace, firstYearFee,
     midSentence, yearlyRewards, firstYearValue, ongoingValue, topEarn, matches, highlights,
     issuerUrl: (c) => ISSUER_URLS[c.issuer],
     issuerRule: (c) => ISSUER_RULES[c.issuer],

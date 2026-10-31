@@ -85,7 +85,7 @@
       if (!CC.matches(c, k)) continue;
       const h = CC.highlights(c, [k])[0];
       const lines = {
-        signup_bonus: `A welcome bonus worth about ${usd(CC.bonusValue(c))} after you spend ${usd(c.bonus.spend)} in the first ${c.bonus.months} months.`,
+        signup_bonus: c.bonus.spend ? `A welcome bonus worth about ${usd(CC.bonusValue(c))} after you spend ${usd(c.bonus.spend)} in the first ${c.bonus.months} months.` : `A first-year bonus worth about ${usd(CC.bonusValue(c))}.`,
         travel_points: `Earns ${REWARD_TYPES[c.rewardType].toLowerCase()} you can put toward trips.`,
         cash_back: `Straightforward cash back — no points math.`,
         no_annual_fee: `No annual fee, so it never costs you to keep.`,

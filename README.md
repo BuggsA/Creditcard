@@ -10,7 +10,7 @@ Three standalone prototypes of a "find the credit card for you" site. Each one h
 
 ## Card data
 
-`shared/cards.js` holds 22 real US cards (Chase, American Express, Capital One, Citi, Wells Fargo, Discover), covering travel, hotel, airline, cash back, 0% APR and credit-building cards. Offers were researched from issuer pages and card-review sites on the `AS_OF` date in that file.
+`shared/cards.js` holds 36 real US cards (Chase, American Express, Capital One, Citi, Wells Fargo, Bank of America, Discover), covering travel, hotel, airline, cash back, 0% APR and credit-building cards. Offers were researched from issuer pages and card-review sites on the `AS_OF` date in that file.
 
 - **Welcome offers change often and many vary by applicant.** Cards whose offer conflicted across sources carry an `offerNote` that is shown to visitors. Every card links to its issuer's site.
 - **APRs are not listed**, because they depend on the applicant. The sites say "Variable — set by issuer".

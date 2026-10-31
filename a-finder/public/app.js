@@ -351,7 +351,7 @@
       ]],
       ["Sign-up bonus", [
         ["Bonus value", (c) => CC.bonusValue(c), "high", (v) => (v ? usd(v) : "None")],
-        ["Spend required", (c) => (c.bonus.amount ? `${usd(c.bonus.spend)} in ${c.bonus.months} mo` : "—")],
+        ["Spend required", (c) => (c.bonus.spend ? `${usd(c.bonus.spend)} in ${c.bonus.months} mo` : "—")],
       ]],
       ["Earning (cents back per $1)", Object.keys(CATEGORIES).map((k) => [
         CATEGORIES[k].label, (c) => +(CC.rate(c, k) * c.pointValue).toFixed(1), "high", (v) => v + "¢",

@@ -414,7 +414,7 @@
         ${grocNote}
       </div>
       <div><h4>Terms</h4>
-        <div class="kv"><span>Bonus</span><span>${c.bonus.amount ? `${esc(CC.bonusLabel(c))} / ${usd(c.bonus.spend)} in ${c.bonus.months}mo` : "none"}</span></div>
+        <div class="kv"><span>Bonus</span><span>${c.bonus.amount ? `${esc(CC.bonusLabel(c))} ${CC.bonusTerms(c, true)}` : "none"}</span></div>
         <div class="kv"><span>Point value</span><span>${c.rewardType === "cashback" ? "cash" : +a.pointValue.toFixed(2) + "¢"}</span></div>
         ${a.credits.map((x) => `<div class="kv"><span>${esc(x.label)}</span><span>${usd(x.amount)}${x.value !== x.amount ? ` <i class="real">≈${usd(x.value)}</i>` : ""}</span></div>`).join("")}
         ${c.perks.map((p) => `<div class="kv"><span>${PERKS[p]}</span><span class="yes">${CC.icon("check")}</span></div>`).join("")}
