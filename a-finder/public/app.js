@@ -303,7 +303,7 @@
         </div>
         <div class="panel">
           <h2>Credits & perks</h2>
-          ${c.credits.map((cr) => `<div class="credit"><strong>${usd(cr.amount)} ${esc(cr.label.toLowerCase())}</strong><span>${esc(cr.ease)}</span></div>`).join("")}
+          ${c.credits.map((cr) => `<div class="credit"><strong>${usd(cr.amount)} ${esc(CC.midSentence(cr.label))}</strong><span>${esc(cr.ease)}</span></div>`).join("")}
           ${c.perks.map((p) => `<div class="credit"><strong>${PERKS[p]}</strong></div>`).join("")}
           ${!c.ftf ? `<div class="credit"><strong>No foreign transaction fees</strong></div>` : ""}
           ${!c.credits.length && !c.perks.length && c.ftf ? `<p class="meta">This card keeps it simple — no extra credits or perks.</p>` : ""}
