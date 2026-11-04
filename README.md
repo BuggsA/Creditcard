@@ -37,9 +37,12 @@ Ledger is built to be found in search and to look good when shared:
 - **Tags on every page** — title, description, canonical URL, Open Graph and Twitter/X preview tags, plus schema.org structured data (`CreditCard`, `ItemList`, `BreadcrumbList`, `WebApplication`).
 - **Share images** — a 1200×630 preview image for the home page and for every card (`c-explorer/public/og/`), plus app icons and a web app manifest for "Add to Home Screen".
 - **`sitemap.xml` and `robots.txt`**, and real 404s for unknown URLs.
+- **Home page FAQ** — a short "About Ledger" section (with `FAQPage` data) gives search engines readable text, since the table itself is drawn by JavaScript.
 - **Sharing in the app** — "Share setup" opens the phone's share sheet (or copies the link on desktop); each expanded card has "Share card" and "Full breakdown" links.
 
 Pages are written with a `{{SITE}}` placeholder. The small Worker in `c-explorer/src/worker.js` replaces it with whatever domain the site is served from, so canonical links, previews and the sitemap are correct on `workers.dev` and on a custom domain without any config.
+
+**When you add a custom domain**, set `SITE_URL` (uncomment `vars` in `c-explorer/wrangler.jsonc`, or add it under the Worker's Settings → Variables). Every page then names that domain as the real one, and visits to the `workers.dev` address are permanently redirected there, so Google doesn't index the same pages twice.
 
 After editing card data, regenerate from the repo root:
 

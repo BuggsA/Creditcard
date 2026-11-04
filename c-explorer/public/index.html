@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -16,13 +16,16 @@
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Ledger ranks credit cards by what they're worth for your spending" />
+  <meta property="og:locale" content="en_US" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Ledger — What is each credit card actually worth to you?" />
   <meta name="twitter:description" content="Enter your spending and see every card's real value in dollars: bonus, rewards, credits and fees." />
   <meta name="twitter:image" content="{{SITE}}/og/default.png" />
+  <meta name="twitter:image:alt" content="Ledger ranks credit cards by what they're worth for your spending" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
   <link rel="manifest" href="/manifest.webmanifest" />
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
-  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","name":"Ledger","url":"{{SITE}}/"},{"@type":"WebApplication","name":"Ledger — Credit card value explorer","url":"{{SITE}}/","applicationCategory":"FinanceApplication","operatingSystem":"Any","description":"Calculates what each credit card is worth for your own spending: sign-up bonus, rewards, credits and annual fee.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Organization","@id":"{{SITE}}/#org","name":"Ledger","url":"{{SITE}}/","logo":"{{SITE}}/icons/icon-512.png"},{"@type":"WebSite","@id":"{{SITE}}/#website","name":"Ledger","url":"{{SITE}}/","inLanguage":"en-US","publisher":{"@id":"{{SITE}}/#org"}},{"@type":"WebApplication","name":"Ledger — Credit card value explorer","url":"{{SITE}}/","applicationCategory":"FinanceApplication","operatingSystem":"Any","description":"Calculates what each credit card is worth for your own spending: sign-up bonus, rewards, credits and annual fee.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"},"@id":"{{SITE}}/#app","publisher":{"@id":"{{SITE}}/#org"}},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"How does Ledger work out what a credit card is worth?","acceptedAnswer":{"@type":"Answer","text":"It adds up the card's sign-up bonus, the rewards it earns on the monthly spending you enter (respecting category caps), and a realistic share of its credits, then subtracts the annual fee. Points are valued at our estimates, and you can switch to cash-out (about 1¢) or transfer-partner (about 2¢) values."}},{"@type":"Question","name":"Is an annual-fee card worth it after the first year?","acceptedAnswer":{"@type":"Answer","text":"The Yr 2+ column shows each card's value every year after the bonus. A ▲ means the card beats the best no-fee card for your spending, and each card's row explains how much of its credits you'd need to use to break even."}},{"@type":"Question","name":"Which card should I get next if I already have some?","acceptedAnswer":{"@type":"Answer","text":"Add the cards you already have under “Cards I already have”. Ledger then ranks each new card by what it adds on top of your wallet, and flags cards you're unlikely to be approved for, such as Chase's 5/24 rule."}},{"@type":"Question","name":"Does Ledger check my credit or cost anything?","acceptedAnswer":{"@type":"Answer","text":"No. Ledger is free, runs in your browser and never checks your credit. Offers change often and many vary by applicant, so confirm the terms with the issuer before you apply."}}]}]}</script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
@@ -116,6 +119,13 @@
         </table>
       </div>
       <noscript><p class="noscript">Ledger's calculator needs JavaScript. You can still browse every card's breakdown and the best-card rankings below.</p></noscript>
+      <section class="about" aria-labelledby="about-h">
+        <h2 id="about-h">About Ledger</h2>
+        <details><summary>How does Ledger work out what a credit card is worth?</summary><p>It adds up the card's sign-up bonus, the rewards it earns on the monthly spending you enter (respecting category caps), and a realistic share of its credits, then subtracts the annual fee. Points are valued at our estimates, and you can switch to cash-out (about 1¢) or transfer-partner (about 2¢) values.</p></details>
+        <details><summary>Is an annual-fee card worth it after the first year?</summary><p>The Yr 2+ column shows each card's value every year after the bonus. A ▲ means the card beats the best no-fee card for your spending, and each card's row explains how much of its credits you'd need to use to break even.</p></details>
+        <details><summary>Which card should I get next if I already have some?</summary><p>Add the cards you already have under “Cards I already have”. Ledger then ranks each new card by what it adds on top of your wallet, and flags cards you're unlikely to be approved for, such as Chase's 5/24 rule.</p></details>
+        <details><summary>Does Ledger check my credit or cost anything?</summary><p>No. Ledger is free, runs in your browser and never checks your credit. Offers change often and many vary by applicant, so confirm the terms with the issuer before you apply.</p></details>
+      </section>
       <!-- seo:links -->
       <section class="seo-links" aria-label="Guides">
         <div><h2>Best cards for…</h2><a href="/best/groceries/">Groceries</a><a href="/best/dining/">Dining</a><a href="/best/travel/">Travel</a><a href="/best/hotels/">Hotels</a><a href="/best/airlines/">Airline perks</a><a href="/best/no-annual-fee/">No annual fee</a><a href="/best/sign-up-bonus/">Sign-up bonuses</a><a href="/best/0-percent-apr/">0% intro APR</a><a href="/best/building-credit/">Building credit</a></div>

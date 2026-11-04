@@ -16,6 +16,8 @@ const { CARDS, CATEGORIES, PERKS, CREDIT_TIERS, REWARD_TYPES, DEFAULT_SPEND, usd
 const CATS = Object.keys(CATEGORIES);
 const ISO_DATE = new Date(CC.AS_OF + " 12:00 UTC").toISOString().slice(0, 10);
 const TOTAL = Object.values(DEFAULT_SPEND).reduce((a, b) => a + b, 0);
+// Google shows roughly the first 60 characters of a title: use the longest variant that fits.
+const fit = (...variants) => variants.find((t) => t.length <= 62) || variants[variants.length - 1];
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const COBRANDS = ["Marriott", "Hilton", "World of Hyatt", "Delta", "United", "Discover"];
@@ -66,9 +68,15 @@ const LIST = [
 ];
 
 // ---------- page shell ----------
-function page({ path, title, description, image = "/og/default.png", jsonld, body }) {
+function page({ path, title, description, image = "/og/default.png", imageAlt = "Ledger ranks credit cards by what they're worth for your spending", jsonld, body }) {
+  // Every page is also described as a WebPage that belongs to the Ledger site, with its update date.
+  jsonld["@graph"].push({
+    "@type": "WebPage", "@id": `{{SITE}}${path}`, url: `{{SITE}}${path}`, name: title, description,
+    inLanguage: "en-US", dateModified: ISO_DATE, isPartOf: { "@id": "{{SITE}}/#website" },
+    publisher: { "@id": "{{SITE}}/#org" }, primaryImageOfPage: `{{SITE}}${image}`,
+  });
   return `<!doctype html>
-<html lang="en">
+<html lang="en-US">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -84,10 +92,15 @@ function page({ path, title, description, image = "/og/default.png", jsonld, bod
   <meta property="og:image" content="{{SITE}}${image}" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="${esc(imageAlt)}" />
+  <meta property="og:locale" content="en_US" />
+  <meta property="article:modified_time" content="${ISO_DATE}" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="${esc(title)}" />
   <meta name="twitter:description" content="${esc(description)}" />
   <meta name="twitter:image" content="{{SITE}}${image}" />
+  <meta name="twitter:image:alt" content="${esc(imageAlt)}" />
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
   <link rel="icon" href="/icons/favicon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
   <link rel="manifest" href="/manifest.webmanifest" />
@@ -139,7 +152,7 @@ function cardPage(c) {
   else
     verdict = `<p class="verdict warn"><b>Probably not worth the fee after year one</b> for typical spending: the no-fee ${esc(fullName(nf.c))} would net about ${usd(nf.v.ongoing - v.ongoing)} a year more. It can still make sense if you spend more in its bonus categories or use more of its credits.</p>`;
   const similar = CARDS.filter((x) => x.id !== c.id && x.rewardType === c.rewardType).slice(0, 4);
-  const title = `${name}: is it worth it? Real value calculator`;
+  const title = fit(`${name}: is it worth it? Real value calculator`, `${name}: is it worth it? Real value`, `${name}: is it worth it?`);
   const shortFee = c.annualFee ? `${usd(c.annualFee)} fee${c.firstYearFee === 0 ? " ($0 year 1)" : ""}` : "No annual fee";
   const description = `${name}: ${shortFee}, ${CC.bonusValue(c) ? `≈${usd(CC.bonusValue(c))} sign-up bonus` : "no sign-up bonus"}, ≈${usd(v.year1)} net value in year one. See what it's worth for your spending.`;
   const body = `
@@ -194,7 +207,7 @@ function cardPage(c) {
       <p class="small">Updated ${esc(CC.AS_OF)}.</p>
     </article>`;
   const jsonld = { "@context": "https://schema.org", "@graph": [cardSchema(c, v), crumbs([["Ledger", "/"], [name, `/cards/${c.id}/`]])] };
-  return page({ path: `/cards/${c.id}/`, title, description, image: `/og/${c.id}.png`, jsonld, body });
+  return page({ path: `/cards/${c.id}/`, title, description, image: `/og/${c.id}.png`, imageAlt: `${name}: ${usd(v.year1)} estimated net value in year one`, jsonld, body });
 }
 
 // ---------- best-for pages ----------
@@ -208,7 +221,8 @@ function listPage(l) {
   const rows = CARDS.filter(l.filter).map((c) => ({ c, v: value(c, l.spend) })).sort(sorters[l.sort]);
   const total = Object.values(l.spend).reduce((a, b) => a + b, 0);
   const top = rows[0];
-  const title = `${l.title} (${new Date(ISO_DATE).getUTCFullYear()}) — ranked by real value`;
+  const year = new Date(ISO_DATE).getUTCFullYear();
+  const title = fit(`${l.title} (${year}) — ranked by real value`, `${l.title} (${year}), ranked by value`, `${l.title} (${year})`, l.title);
   const description = `${l.title}, ranked by real dollar value. #1: ${fullName(top.c)}. Rerun the ranking with your own spending.`;
   const body = `
     <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Ledger</a> › <span>${esc(l.short)}</span></nav>

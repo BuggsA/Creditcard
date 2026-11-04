@@ -322,3 +322,9 @@ a.brand { color: var(--text); text-decoration: none; }
   .seo-links { grid-template-columns: 1fr; }
   .xbtns a { padding: 10px 14px; font-size: 14px; }
 }
+.about { margin-top: 36px; padding-top: 22px; border-top: 1px solid var(--line); max-width: 760px; }
+.about h2 { font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 10px; font-weight: 600; }
+.about details { border-bottom: 1px solid var(--line); }
+.about summary { cursor: pointer; padding: 10px 0; font-size: 14px; color: var(--text); }
+.about summary:hover { color: var(--lime); }
+.about p { margin: 0 0 12px; font-size: 13px; line-height: 1.55; color: var(--muted); }
