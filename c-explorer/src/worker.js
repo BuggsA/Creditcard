@@ -1,12 +1,12 @@
 /*
- * Serves CardCompass's static files, filling in the site's own origin wherever a
+ * Serves CardCove's static files, filling in the site's own origin wherever a
  * page says {{SITE}}. Canonical links, share previews (Open Graph) and the
  * sitemap need absolute URLs.
  *
  * By default the origin is whatever domain the request came in on, so the site
  * works on workers.dev with no setup. Once a custom domain is live, set
  * SITE_URL (in wrangler.jsonc "vars" or the dashboard), e.g.
- * "https://cardcompass.example.com": every page then points search engines at that
+ * "https://cardcove.example.com": every page then points search engines at that
  * domain, and requests to any other host (like *.workers.dev) are sent there
  * with a permanent redirect, so the same pages aren't indexed twice.
  *

@@ -1,6 +1,6 @@
 {
-  "name": "CardCompass — Credit card value explorer",
-  "short_name": "CardCompass",
+  "name": "CardCove — Credit card value explorer",
+  "short_name": "CardCove",
   "description": "See what each credit card is actually worth for your spending.",
   "start_url": "/",
   "scope": "/",

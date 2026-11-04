@@ -296,9 +296,9 @@
   function share() {
     persist();
     const text = lastBest
-      ? `${lastBest.c.name} comes out on top for my spending on CardCompass (${usd(lastBest.net)} in year one). See what each card is worth for yours:`
+      ? `${lastBest.c.name} comes out on top for my spending on CardCove (${usd(lastBest.net)} in year one). See what each card is worth for yours:`
       : "See what each credit card is actually worth for your spending:";
-    shareLink({ url: location.href, title: "CardCompass — my card rankings", text }, $("#share"));
+    shareLink({ url: location.href, title: "CardCove — my card rankings", text }, $("#share"));
   }
 
   // ---------- table ----------

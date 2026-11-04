@@ -1,8 +1,8 @@
-// Renders CardCompass's share-preview images (Open Graph, 1200×630) and app icons with a headless browser:
+// Renders CardCove's share-preview images (Open Graph, 1200×630) and app icons with a headless browser:
 //   c-explorer/public/og/default.png, og/<card-id>.png
 //   c-explorer/public/icons/icon-192.png, icon-512.png, icon-512-maskable.png, apple-touch-icon.png
 // Needs Playwright (npm i -D playwright && npx playwright install chromium). Run from the repo root
-// after editing card data:  node scripts/build-cardcompass-images.mjs
+// after editing card data:  node scripts/build-cardcove-images.mjs
 import { readFileSync, mkdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import vm from "node:vm";
@@ -50,7 +50,7 @@ function defaultHtml() {
     .bar { height: 8px; border-radius: 4px; background: #a3e635; margin-top: 8px; }
     .row .mono { font-size: 24px; color: #a3e635; }
   </style></head><body>
-    <div class="brand">${logo} CardCompass</div>
+    <div class="brand">${logo} CardCove</div>
     <h1>What is each card <em>actually</em> worth to you?</h1>
     <p class="sub">Enter your spending. See every card's real value in dollars — bonus, rewards, credits and fees.</p>
     <div class="board"><h2>Year-one value · typical spending</h2>
@@ -75,7 +75,7 @@ function cardHtml(c) {
     .stats .mono { display: block; font-size: 40px; margin-top: 6px; }
     .lime { color: #a3e635; }
   </style></head><body>
-    <div class="brand">${logo} CardCompass</div>
+    <div class="brand">${logo} CardCove</div>
     <div class="chip card" style="background:linear-gradient(135deg,${c.colors[0]},${c.colors[1]})"><span>${esc(c.name)}</span></div>
     <p class="issuer">${esc(c.issuer)} · ${REWARD_TYPES[c.rewardType]}</p>
     <h1>${esc(name)}<br><span class="q">Is it worth it?</span></h1>
@@ -90,7 +90,7 @@ function cardHtml(c) {
 }
 
 const iconHtml = (size, pad) => `<!doctype html><html><head><style>*{margin:0}body{width:${size}px;height:${size}px;background:#0b0f14;display:grid;place-items:center}</style></head><body>
-  <svg width="${size - pad * 2}" height="${size - pad * 2}" viewBox="0 0 24 24" stroke-linecap="round" style="color:#a3e635"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M16.6 7.4 13.4 13.4 10.6 10.6z" fill="currentColor" stroke="none"/><path d="M7.4 16.6 10.6 10.6 13.4 13.4z" fill="currentColor" fill-opacity=".45" stroke="none"/></svg></body></html>`;
+  <svg width="${size - pad * 2}" height="${size - pad * 2}" viewBox="0 0 24 24" stroke-linecap="round" style="color:#a3e635"><path d="M19.5 6.2A9 9 0 1 0 19.5 17.8" stroke="currentColor" stroke-width="2.2" fill="none"/><rect x="8.5" y="9" width="9" height="6" rx="1.3" fill="currentColor" stroke="none"/></svg></body></html>`;
 
 mkdirSync(`${ROOT}/og`, { recursive: true });
 mkdirSync(`${ROOT}/icons`, { recursive: true });

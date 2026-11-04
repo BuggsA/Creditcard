@@ -1,9 +1,9 @@
-// Generates CardCompass's search-engine pages from the card data:
+// Generates CardCove's search-engine pages from the card data:
 //   c-explorer/public/cards/<id>/index.html   one breakdown page per card
 //   c-explorer/public/best/<slug>/index.html  "best card for …" rankings
 //   c-explorer/public/sitemap.xml, robots.txt
 //   the internal-links block in c-explorer/public/index.html
-// Run from the repo root after editing card data:  node scripts/build-cardcompass-pages.mjs
+// Run from the repo root after editing card data:  node scripts/build-cardcove-pages.mjs
 // Absolute URLs are written as {{SITE}}; the Worker (c-explorer/src/worker.js) fills in the origin.
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import vm from "node:vm";
@@ -39,7 +39,7 @@ const bestNoFee = (spend, except) =>
 const cents = (c, cat) => CC.rate(c, cat) * c.pointValue;
 const LIST = [
   { slug: "groceries", title: "Best credit cards for groceries", short: "Groceries",
-    intro: "Ranked by what each card is worth every year for a household that spends heavily at the supermarket. Walmart, Target and Costco usually don't count as groceries — CardCompass lets you adjust for that.",
+    intro: "Ranked by what each card is worth every year for a household that spends heavily at the supermarket. Walmart, Target and Costco usually don't count as groceries — CardCove lets you adjust for that.",
     spend: { ...DEFAULT_SPEND, groceries: 900 }, filter: (c) => cents(c, "groceries") >= 3, sort: "ongoing" },
   { slug: "dining", title: "Best credit cards for dining and restaurants", short: "Dining",
     intro: "Ranked by yearly value for someone who eats out a lot. Restaurant rewards on these cards range from about 3¢ to 6¢ per dollar once points are valued.",
@@ -57,10 +57,10 @@ const LIST = [
     intro: "Cash back cards ranked by what they're worth every year on typical spending — flat-rate, grocery, and rotating-category cards side by side, in plain dollars.",
     spend: DEFAULT_SPEND, filter: (c) => c.rewardType === "cashback" && CC.rate(c, "other") > 0, sort: "ongoing" },
   { slug: "business", title: "Best small-business credit cards", short: "Business cards", business: true,
-    intro: "Business cards ranked by first-year value for a small business spending about $4,500 a month. Freelancers and sole proprietors can usually apply with their own name and Social Security number. Many big bonuses need several thousand dollars of spending in 3 months — CardCompass only counts a bonus when the spending below reaches it.",
+    intro: "Business cards ranked by first-year value for a small business spending about $4,500 a month. Freelancers and sole proprietors can usually apply with their own name and Social Security number. Many big bonuses need several thousand dollars of spending in 3 months — CardCove only counts a bonus when the spending below reaches it.",
     spend: { dining: 400, groceries: 0, hotels: 300, airfare: 400, gas: 300, streaming: 40, other: 3060 }, filter: () => true, sort: "year1" },
   { slug: "no-annual-fee", title: "Best no-annual-fee credit cards", short: "No annual fee",
-    intro: "Cards that cost nothing to keep, ranked by what they earn each year on typical spending. A no-fee card is also the benchmark CardCompass uses to judge whether a fee card is worth it.",
+    intro: "Cards that cost nothing to keep, ranked by what they earn each year on typical spending. A no-fee card is also the benchmark CardCove uses to judge whether a fee card is worth it.",
     spend: DEFAULT_SPEND, filter: (c) => c.annualFee === 0 && CC.rate(c, "other") > 0, sort: "ongoing" },
   { slug: "sign-up-bonus", title: "Best credit card sign-up bonuses", short: "Sign-up bonuses",
     intro: "Welcome offers ranked by their estimated dollar value. Offers change often and many vary by applicant — always confirm the current offer with the issuer.",
@@ -74,8 +74,8 @@ const LIST = [
 ];
 
 // ---------- page shell ----------
-function page({ path, title, description, image = "/og/default.png", imageAlt = "CardCompass ranks credit cards by what they're worth for your spending", jsonld, body }) {
-  // Every page is also described as a WebPage that belongs to the CardCompass site, with its update date.
+function page({ path, title, description, image = "/og/default.png", imageAlt = "CardCove ranks credit cards by what they're worth for your spending", jsonld, body }) {
+  // Every page is also described as a WebPage that belongs to the CardCove site, with its update date.
   jsonld["@graph"].push({
     "@type": "WebPage", "@id": `{{SITE}}${path}`, url: `{{SITE}}${path}`, name: title, description,
     inLanguage: "en-US", dateModified: ISO_DATE, isPartOf: { "@id": "{{SITE}}/#website" },
@@ -91,7 +91,7 @@ function page({ path, title, description, image = "/og/default.png", imageAlt = 
   <link rel="canonical" href="{{SITE}}${path}" />
   <meta name="theme-color" content="#0b0f14" />
   <meta property="og:type" content="article" />
-  <meta property="og:site_name" content="CardCompass" />
+  <meta property="og:site_name" content="CardCove" />
   <meta property="og:title" content="${esc(title)}" />
   <meta property="og:description" content="${esc(description)}" />
   <meta property="og:url" content="{{SITE}}${path}" />
@@ -118,7 +118,7 @@ function page({ path, title, description, image = "/og/default.png", imageAlt = 
 </head>
 <body>
   <header class="top">
-    <a class="brand" href="/">${CC.icon("brandmark", "glyph")} CardCompass</a>
+    <a class="brand" href="/">${CC.icon("brandmark", "glyph")} CardCove</a>
     <a class="cta-top" href="/">${CC.icon("sliders")} <span class="label-long">Try it with your spending</span><span class="label-short">Try it</span></a>
   </header>
   <main class="wrap">
@@ -126,7 +126,7 @@ ${body}
   </main>
   <footer class="wrap foot">
     <nav aria-label="Best cards by category"><h2>Best cards for…</h2>${LIST.map((l) => `<a href="/best/${l.slug}/">${esc(l.short)}</a>`).join("")}</nav>
-    <p>Offers checked ${esc(CC.AS_OF)}. Terms change often and many vary by applicant — always confirm with the issuer before applying. Values are estimates using our point valuations and a realistic share of each card's credits. CardCompass never checks your credit. Not financial advice.</p>
+    <p>Offers checked ${esc(CC.AS_OF)}. Terms change often and many vary by applicant — always confirm with the issuer before applying. Values are estimates using our point valuations and a realistic share of each card's credits. CardCove never checks your credit. Not financial advice.</p>
     <p class="links"><a href="/about/">About &amp; how we rank</a> · <a href="/privacy/">Privacy</a></p>
   </footer>
 </body>
@@ -163,7 +163,7 @@ function cardPage(c) {
   const shortFee = c.annualFee ? `${usd(c.annualFee)} fee${c.firstYearFee === 0 ? " ($0 year 1)" : ""}` : "No annual fee";
   const description = `${name}: ${shortFee}, ${CC.bonusValue(c) ? `≈${usd(CC.bonusValue(c))} sign-up bonus` : "no sign-up bonus"}, ≈${usd(v.year1)} net value in year one. See what it's worth for your spending.`;
   const body = `
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">CardCompass</a> › <span>${esc(name)}</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">CardCove</a> › <span>${esc(name)}</span></nav>
     <article>
       <div class="hero">
         <span class="chip" style="background:linear-gradient(135deg,${c.colors[0]},${c.colors[1]})"></span>
@@ -215,7 +215,7 @@ function cardPage(c) {
       ${similar.length ? `<h2>Similar cards</h2><div class="similar">${similar.map((x) => `<a href="/cards/${x.id}/"><span class="chip sm" style="background:linear-gradient(135deg,${x.colors[0]},${x.colors[1]})"></span><span><b>${esc(fullName(x))}</b><small>${usd(value(x).year1)} year 1 · ${usd(x.annualFee)} fee</small></span></a>`).join("")}</div>` : ""}
       <p class="small">Updated ${esc(CC.AS_OF)}.</p>
     </article>`;
-  const jsonld = { "@context": "https://schema.org", "@graph": [cardSchema(c, v), crumbs([["CardCompass", "/"], [name, `/cards/${c.id}/`]])] };
+  const jsonld = { "@context": "https://schema.org", "@graph": [cardSchema(c, v), crumbs([["CardCove", "/"], [name, `/cards/${c.id}/`]])] };
   return page({ path: `/cards/${c.id}/`, title, description, image: `/og/${c.id}.png`, imageAlt: `${name}: ${usd(v.year1)} estimated net value in year one`, jsonld, body });
 }
 
@@ -235,7 +235,7 @@ function listPage(l) {
   const title = fit(`${l.title} (${year}) — ranked by real value`, `${l.title} (${year}), ranked by value`, `${l.title} (${year})`, l.title);
   const description = `${l.title}, ranked by real dollar value. #1: ${fullName(top.c)}. Rerun the ranking with your own spending.`;
   const body = `
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">CardCompass</a> › <span>${esc(l.short)}</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">CardCove</a> › <span>${esc(l.short)}</span></nav>
     <article>
       <h1>${esc(l.title)}</h1>
       <p class="lead">${esc(l.intro)}</p>
@@ -256,7 +256,7 @@ function listPage(l) {
         </li>`).join("")}
       </ol>
       <h2>How we rank</h2>
-      <p>CardCompass adds up each card's sign-up bonus, the rewards it earns on the spending above (respecting caps), and a realistic share of its credits, then subtracts the annual fee. Points are valued at our estimates — in the calculator you can switch to cash-out (≈1¢) or transfer-partner (≈2¢) values, add the cards you already have, and see which new card adds the most.</p>
+      <p>CardCove adds up each card's sign-up bonus, the rewards it earns on the spending above (respecting caps), and a realistic share of its credits, then subtracts the annual fee. Points are valued at our estimates — in the calculator you can switch to cash-out (≈1¢) or transfer-partner (≈2¢) values, add the cards you already have, and see which new card adds the most.</p>
       <p class="small">Updated ${esc(CC.AS_OF)}.</p>
     </article>`;
   const jsonld = {
@@ -264,7 +264,7 @@ function listPage(l) {
     "@graph": [
       { "@type": "ItemList", name: l.title, itemListOrder: "https://schema.org/ItemListOrderDescending",
         itemListElement: rows.map(({ c, v }, i) => ({ "@type": "ListItem", position: i + 1, item: cardSchema(c, v) })) },
-      crumbs([["CardCompass", "/"], [l.short, `/best/${l.slug}/`]]),
+      crumbs([["CardCove", "/"], [l.short, `/best/${l.slug}/`]]),
     ],
   };
   return page({ path: `/best/${l.slug}/`, title, description, jsonld, body });
@@ -274,10 +274,10 @@ function listPage(l) {
 const PV = [...new Set(CARDS.filter((c) => c.rewardType !== "cashback").map((c) => c.pointValue))].sort((a, b) => a - b);
 function aboutPage() {
   const body = `
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">CardCompass</a> › <span>About</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">CardCove</a> › <span>About</span></nav>
     <article>
-      <h1>About CardCompass and how we rank cards</h1>
-      <p class="lead">CardCompass is a free calculator that shows what ${CARDS.length} popular U.S. credit cards are worth for your own spending, in dollars. It never asks for personal details and never checks your credit.</p>
+      <h1>About CardCove and how we rank cards</h1>
+      <p class="lead">CardCove is a free calculator that shows what ${CARDS.length} popular U.S. credit cards are worth for your own spending, in dollars. It never asks for personal details and never checks your credit.</p>
 
       <h2>How we work out a card's value</h2>
       <ul class="list">
@@ -291,22 +291,22 @@ function aboutPage() {
       <h2>Where the numbers come from</h2>
       <p>Card terms come from each issuer's own pages, cross-checked against major card-review sites. Offers were last checked ${esc(CC.AS_OF)}; we re-check them about once a month. Welcome offers change often and many are targeted, so where sources disagreed we show a note on the card. Rules like Chase's 5/24 are widely reported by applicants, not official policy. Interest rates (APRs) aren't listed because they depend on the applicant.</p>
 
-      <h2>How CardCompass makes money</h2>
+      <h2>How CardCove makes money</h2>
       <p>It doesn't. No card issuer pays to be listed or ranked, and the "check the current offer" links go straight to issuers' own sites with no affiliate tracking. Rankings come only from the math above.</p>
 
       <h2>Not financial advice</h2>
-      <p>CardCompass gives estimates to help you compare cards, not personal financial advice. Always read the issuer's terms before you apply, and remember that rewards rarely outweigh the cost of carrying a balance.</p>
+      <p>CardCove gives estimates to help you compare cards, not personal financial advice. Always read the issuer's terms before you apply, and remember that rewards rarely outweigh the cost of carrying a balance.</p>
       <p class="small">Updated ${esc(CC.AS_OF)}.</p>
     </article>`;
-  const jsonld = { "@context": "https://schema.org", "@graph": [crumbs([["CardCompass", "/"], ["About", "/about/"]])] };
-  return page({ path: "/about/", title: "About CardCompass: how we rank credit cards", description: "How CardCompass works out what each credit card is worth: bonuses, rewards, credits and fees, where the data comes from, and why no issuer pays to be ranked.", jsonld, body });
+  const jsonld = { "@context": "https://schema.org", "@graph": [crumbs([["CardCove", "/"], ["About", "/about/"]])] };
+  return page({ path: "/about/", title: "About CardCove: how we rank credit cards", description: "How CardCove works out what each credit card is worth: bonuses, rewards, credits and fees, where the data comes from, and why no issuer pays to be ranked.", jsonld, body });
 }
 function privacyPage() {
   const body = `
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">CardCompass</a> › <span>Privacy</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">CardCove</a> › <span>Privacy</span></nav>
     <article>
       <h1>Privacy</h1>
-      <p class="lead">CardCompass has no accounts, no ads and no tracking cookies. The spending you enter stays in your browser.</p>
+      <p class="lead">CardCove has no accounts, no ads and no tracking cookies. The spending you enter stays in your browser.</p>
       <h2>What's stored, and where</h2>
       <ul class="list">
         <li><b>Your settings</b> (spending, filters, cards you have) are saved in your own browser's local storage so they're there next time, and in the page address so a shared link shows the same table. They're never sent to us.</li>
@@ -318,8 +318,8 @@ function privacyPage() {
       <p>To clear your saved settings, clear this site's data in your browser.</p>
       <p class="small">Updated ${esc(CC.AS_OF)}.</p>
     </article>`;
-  const jsonld = { "@context": "https://schema.org", "@graph": [crumbs([["CardCompass", "/"], ["Privacy", "/privacy/"]])] };
-  return page({ path: "/privacy/", title: "Privacy — CardCompass", description: "CardCompass has no accounts, ads or tracking cookies. Your spending stays in your browser. Here's exactly what is stored and where.", jsonld, body });
+  const jsonld = { "@context": "https://schema.org", "@graph": [crumbs([["CardCove", "/"], ["Privacy", "/privacy/"]])] };
+  return page({ path: "/privacy/", title: "Privacy — CardCove", description: "CardCove has no accounts, ads or tracking cookies. Your spending stays in your browser. Here's exactly what is stored and where.", jsonld, body });
 }
 
 // ---------- write everything ----------
@@ -356,7 +356,7 @@ const links = `<!-- seo:links -->
       <section class="seo-links" aria-label="Guides">
         <div><h2>Best cards for…</h2>${LIST.map((l) => `<a href="/best/${l.slug}/">${esc(l.short)}</a>`).join("")}</div>
         <div><h2>Card breakdowns</h2>${CARDS.map((c) => `<a href="/cards/${c.id}/">${esc(fullName(c))}</a>`).join("")}</div>
-        <div><h2>CardCompass</h2><a href="/about/">About &amp; how we rank</a><a href="/privacy/">Privacy</a></div>
+        <div><h2>CardCove</h2><a href="/about/">About &amp; how we rank</a><a href="/privacy/">Privacy</a></div>
       </section>
       <!-- /seo:links -->`;
 writeFileSync(`${ROOT}/index.html`, index
