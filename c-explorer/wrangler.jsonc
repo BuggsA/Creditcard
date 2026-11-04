@@ -5,9 +5,9 @@
   // Static site plus a tiny Worker (src/worker.js) that fills in the site's
   // own URL on pages, the sitemap and robots.txt. No build step.
   "main": "src/worker.js",
-  // Optional: once a custom domain is live, set it here (no trailing slash) so
-  // search engines index only that domain. Other hosts redirect to it.
-  // "vars": { "SITE_URL": "https://ledger.example.com" },
+  // The site's real domain (no trailing slash): search engines index only this
+  // domain, and other hosts (e.g. *.workers.dev) redirect to it.
+  "vars": { "SITE_URL": "https://credit.loopi.sh" },
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",

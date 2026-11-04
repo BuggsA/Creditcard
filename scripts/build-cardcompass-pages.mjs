@@ -1,9 +1,9 @@
-// Generates Ledger's search-engine pages from the card data:
+// Generates CardCompass's search-engine pages from the card data:
 //   c-explorer/public/cards/<id>/index.html   one breakdown page per card
 //   c-explorer/public/best/<slug>/index.html  "best card for …" rankings
 //   c-explorer/public/sitemap.xml, robots.txt
 //   the internal-links block in c-explorer/public/index.html
-// Run from the repo root after editing card data:  node scripts/build-ledger-pages.mjs
+// Run from the repo root after editing card data:  node scripts/build-cardcompass-pages.mjs
 // Absolute URLs are written as {{SITE}}; the Worker (c-explorer/src/worker.js) fills in the origin.
 import { readFileSync, writeFileSync, mkdirSync, rmSync, existsSync } from "node:fs";
 import vm from "node:vm";
@@ -39,7 +39,7 @@ const bestNoFee = (spend, except) =>
 const cents = (c, cat) => CC.rate(c, cat) * c.pointValue;
 const LIST = [
   { slug: "groceries", title: "Best credit cards for groceries", short: "Groceries",
-    intro: "Ranked by what each card is worth every year for a household that spends heavily at the supermarket. Walmart, Target and Costco usually don't count as groceries — Ledger lets you adjust for that.",
+    intro: "Ranked by what each card is worth every year for a household that spends heavily at the supermarket. Walmart, Target and Costco usually don't count as groceries — CardCompass lets you adjust for that.",
     spend: { ...DEFAULT_SPEND, groceries: 900 }, filter: (c) => cents(c, "groceries") >= 3, sort: "ongoing" },
   { slug: "dining", title: "Best credit cards for dining and restaurants", short: "Dining",
     intro: "Ranked by yearly value for someone who eats out a lot. Restaurant rewards on these cards range from about 3¢ to 6¢ per dollar once points are valued.",
@@ -54,7 +54,7 @@ const LIST = [
     intro: "Cards with free checked bags, lounge access or airline credits, ranked by first-year value for a frequent flyer.",
     spend: { dining: 400, groceries: 400, hotels: 300, airfare: 600, gas: 100, streaming: 30, other: 1000 }, filter: (c) => CC.matches(c, "airline_perks") || CC.matches(c, "lounge"), sort: "year1" },
   { slug: "no-annual-fee", title: "Best no-annual-fee credit cards", short: "No annual fee",
-    intro: "Cards that cost nothing to keep, ranked by what they earn each year on typical spending. A no-fee card is also the benchmark Ledger uses to judge whether a fee card is worth it.",
+    intro: "Cards that cost nothing to keep, ranked by what they earn each year on typical spending. A no-fee card is also the benchmark CardCompass uses to judge whether a fee card is worth it.",
     spend: DEFAULT_SPEND, filter: (c) => c.annualFee === 0 && CC.rate(c, "other") > 0, sort: "ongoing" },
   { slug: "sign-up-bonus", title: "Best credit card sign-up bonuses", short: "Sign-up bonuses",
     intro: "Welcome offers ranked by their estimated dollar value. Offers change often and many vary by applicant — always confirm the current offer with the issuer.",
@@ -68,8 +68,8 @@ const LIST = [
 ];
 
 // ---------- page shell ----------
-function page({ path, title, description, image = "/og/default.png", imageAlt = "Ledger ranks credit cards by what they're worth for your spending", jsonld, body }) {
-  // Every page is also described as a WebPage that belongs to the Ledger site, with its update date.
+function page({ path, title, description, image = "/og/default.png", imageAlt = "CardCompass ranks credit cards by what they're worth for your spending", jsonld, body }) {
+  // Every page is also described as a WebPage that belongs to the CardCompass site, with its update date.
   jsonld["@graph"].push({
     "@type": "WebPage", "@id": `{{SITE}}${path}`, url: `{{SITE}}${path}`, name: title, description,
     inLanguage: "en-US", dateModified: ISO_DATE, isPartOf: { "@id": "{{SITE}}/#website" },
@@ -85,7 +85,7 @@ function page({ path, title, description, image = "/og/default.png", imageAlt = 
   <link rel="canonical" href="{{SITE}}${path}" />
   <meta name="theme-color" content="#0b0f14" />
   <meta property="og:type" content="article" />
-  <meta property="og:site_name" content="Ledger" />
+  <meta property="og:site_name" content="CardCompass" />
   <meta property="og:title" content="${esc(title)}" />
   <meta property="og:description" content="${esc(description)}" />
   <meta property="og:url" content="{{SITE}}${path}" />
@@ -112,7 +112,7 @@ function page({ path, title, description, image = "/og/default.png", imageAlt = 
 </head>
 <body>
   <header class="top">
-    <a class="brand" href="/">${CC.icon("bars", "glyph")} LEDGER</a>
+    <a class="brand" href="/">${CC.icon("brandmark", "glyph")} CardCompass</a>
     <a class="cta-top" href="/">${CC.icon("sliders")} <span class="lg">Try it with your spending</span><span class="sm">Try it</span></a>
   </header>
   <main class="wrap">
@@ -120,7 +120,7 @@ ${body}
   </main>
   <footer class="wrap foot">
     <nav aria-label="Best cards by category"><h2>Best cards for…</h2>${LIST.map((l) => `<a href="/best/${l.slug}/">${esc(l.short)}</a>`).join("")}</nav>
-    <p>Offers checked ${esc(CC.AS_OF)}. Terms change often and many vary by applicant — always confirm with the issuer before applying. Values are estimates using our point valuations and a realistic share of each card's credits. Ledger never checks your credit.</p>
+    <p>Offers checked ${esc(CC.AS_OF)}. Terms change often and many vary by applicant — always confirm with the issuer before applying. Values are estimates using our point valuations and a realistic share of each card's credits. CardCompass never checks your credit.</p>
   </footer>
 </body>
 </html>
@@ -156,7 +156,7 @@ function cardPage(c) {
   const shortFee = c.annualFee ? `${usd(c.annualFee)} fee${c.firstYearFee === 0 ? " ($0 year 1)" : ""}` : "No annual fee";
   const description = `${name}: ${shortFee}, ${CC.bonusValue(c) ? `≈${usd(CC.bonusValue(c))} sign-up bonus` : "no sign-up bonus"}, ≈${usd(v.year1)} net value in year one. See what it's worth for your spending.`;
   const body = `
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Ledger</a> › <span>${esc(name)}</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">CardCompass</a> › <span>${esc(name)}</span></nav>
     <article>
       <div class="hero">
         <span class="chip" style="background:linear-gradient(135deg,${c.colors[0]},${c.colors[1]})"></span>
@@ -206,7 +206,7 @@ function cardPage(c) {
       ${similar.length ? `<h2>Similar cards</h2><div class="similar">${similar.map((x) => `<a href="/cards/${x.id}/"><span class="chip sm" style="background:linear-gradient(135deg,${x.colors[0]},${x.colors[1]})"></span><span><b>${esc(fullName(x))}</b><small>${usd(value(x).year1)} year 1 · ${usd(x.annualFee)} fee</small></span></a>`).join("")}</div>` : ""}
       <p class="small">Updated ${esc(CC.AS_OF)}.</p>
     </article>`;
-  const jsonld = { "@context": "https://schema.org", "@graph": [cardSchema(c, v), crumbs([["Ledger", "/"], [name, `/cards/${c.id}/`]])] };
+  const jsonld = { "@context": "https://schema.org", "@graph": [cardSchema(c, v), crumbs([["CardCompass", "/"], [name, `/cards/${c.id}/`]])] };
   return page({ path: `/cards/${c.id}/`, title, description, image: `/og/${c.id}.png`, imageAlt: `${name}: ${usd(v.year1)} estimated net value in year one`, jsonld, body });
 }
 
@@ -225,7 +225,7 @@ function listPage(l) {
   const title = fit(`${l.title} (${year}) — ranked by real value`, `${l.title} (${year}), ranked by value`, `${l.title} (${year})`, l.title);
   const description = `${l.title}, ranked by real dollar value. #1: ${fullName(top.c)}. Rerun the ranking with your own spending.`;
   const body = `
-    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">Ledger</a> › <span>${esc(l.short)}</span></nav>
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">CardCompass</a> › <span>${esc(l.short)}</span></nav>
     <article>
       <h1>${esc(l.title)}</h1>
       <p class="lead">${esc(l.intro)}</p>
@@ -246,7 +246,7 @@ function listPage(l) {
         </li>`).join("")}
       </ol>
       <h2>How we rank</h2>
-      <p>Ledger adds up each card's sign-up bonus, the rewards it earns on the spending above (respecting caps), and a realistic share of its credits, then subtracts the annual fee. Points are valued at our estimates — in the calculator you can switch to cash-out (≈1¢) or transfer-partner (≈2¢) values, add the cards you already have, and see which new card adds the most.</p>
+      <p>CardCompass adds up each card's sign-up bonus, the rewards it earns on the spending above (respecting caps), and a realistic share of its credits, then subtracts the annual fee. Points are valued at our estimates — in the calculator you can switch to cash-out (≈1¢) or transfer-partner (≈2¢) values, add the cards you already have, and see which new card adds the most.</p>
       <p class="small">Updated ${esc(CC.AS_OF)}.</p>
     </article>`;
   const jsonld = {
@@ -254,7 +254,7 @@ function listPage(l) {
     "@graph": [
       { "@type": "ItemList", name: l.title, itemListOrder: "https://schema.org/ItemListOrderDescending",
         itemListElement: rows.map(({ c, v }, i) => ({ "@type": "ListItem", position: i + 1, item: cardSchema(c, v) })) },
-      crumbs([["Ledger", "/"], [l.short, `/best/${l.slug}/`]]),
+      crumbs([["CardCompass", "/"], [l.short, `/best/${l.slug}/`]]),
     ],
   };
   return page({ path: `/best/${l.slug}/`, title, description, jsonld, body });

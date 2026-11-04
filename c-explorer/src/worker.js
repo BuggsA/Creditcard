@@ -1,12 +1,12 @@
 /*
- * Serves Ledger's static files, filling in the site's own origin wherever a
+ * Serves CardCompass's static files, filling in the site's own origin wherever a
  * page says {{SITE}}. Canonical links, share previews (Open Graph) and the
  * sitemap need absolute URLs.
  *
  * By default the origin is whatever domain the request came in on, so the site
  * works on workers.dev with no setup. Once a custom domain is live, set
  * SITE_URL (in wrangler.jsonc "vars" or the dashboard), e.g.
- * "https://ledger.example.com": every page then points search engines at that
+ * "https://cardcompass.example.com": every page then points search engines at that
  * domain, and requests to any other host (like *.workers.dev) are sent there
  * with a permanent redirect, so the same pages aren't indexed twice.
  *
@@ -20,7 +20,8 @@ export default {
     const url = new URL(request.url);
     const site = (env.SITE_URL || "").replace(/\/+$/, "");
 
-    if (site && url.origin !== site && (request.method === "GET" || request.method === "HEAD")) {
+    const local = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+    if (site && !local && url.origin !== site && (request.method === "GET" || request.method === "HEAD")) {
       return Response.redirect(site + url.pathname + url.search, 301);
     }
 
@@ -28,7 +29,7 @@ export default {
     const type = res.headers.get("content-type") || "";
     if (!res.body || !TEXT.test(type)) return res;
 
-    const body = (await res.text()).replaceAll("{{SITE}}", site || url.origin);
+    const body = (await res.text()).replaceAll("{{SITE}}", (!local && site) || url.origin);
     const headers = new Headers(res.headers);
     headers.delete("content-length");
     headers.delete("etag");

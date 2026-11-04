@@ -21,7 +21,7 @@ button { cursor: pointer; }
 .mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
 
 .top { display: flex; align-items: center; gap: 24px; height: var(--top); padding: 0 20px; border-bottom: 1px solid var(--line); position: sticky; top: 0; background: rgba(11,15,20,.92); backdrop-filter: blur(6px); z-index: 20; }
-.brand { font-weight: 700; letter-spacing: .2em; font-size: 15px; }
+.brand { font-weight: 700; letter-spacing: -0.01em; font-size: 17px; }
 .glyph { color: var(--lime); letter-spacing: -2px; margin-right: 6px; }
 .tagline { color: var(--muted); }
 .tagline em { color: var(--text); font-style: normal; border-bottom: 1px solid var(--lime); }
@@ -262,7 +262,7 @@ details.sub[open] summary { margin-bottom: 8px; }
 }
 @media (max-width: 600px) {
   .top { gap: 10px; padding: 0 12px; }
-  .brand { font-size: 13px; letter-spacing: .14em; }
+  .brand { font-size: 16px; }
   .btn-share { padding: 8px 10px; font-size: 13px; }
   .btn-ghost { font-size: 13px; }
   .btn-ghost { padding: 8px 12px; }
@@ -281,7 +281,7 @@ details.sub[open] summary { margin-bottom: 8px; }
   .lg { display: none; }
   .sm { display: inline; }
 }
-@media (max-width: 370px) {
+@media (max-width: 440px) {
   .lg2 { display: none; }
   .sm2 { display: inline; }
 }

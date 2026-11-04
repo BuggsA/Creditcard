@@ -1,8 +1,8 @@
-// Renders Ledger's share-preview images (Open Graph, 1200×630) and app icons with a headless browser:
+// Renders CardCompass's share-preview images (Open Graph, 1200×630) and app icons with a headless browser:
 //   c-explorer/public/og/default.png, og/<card-id>.png
 //   c-explorer/public/icons/icon-192.png, icon-512.png, icon-512-maskable.png, apple-touch-icon.png
 // Needs Playwright (npm i -D playwright && npx playwright install chromium). Run from the repo root
-// after editing card data:  node scripts/build-ledger-images.mjs
+// after editing card data:  node scripts/build-cardcompass-images.mjs
 import { readFileSync, mkdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import vm from "node:vm";
@@ -25,7 +25,7 @@ const BASE = `
   * { box-sizing: border-box; margin: 0; }
   body { width: 1200px; height: 630px; background: #0b0f14; color: #e6edf3; font-family: "Space Grotesk", system-ui, sans-serif; overflow: hidden; position: relative; }
   body::before { content: ""; position: absolute; inset: 0; background: radial-gradient(900px 500px at 100% 0%, rgba(163,230,53,.10), transparent 60%); }
-  .brand { position: absolute; left: 72px; top: 60px; display: flex; align-items: center; gap: 14px; font-weight: 700; letter-spacing: .22em; font-size: 26px; }
+  .brand { position: absolute; left: 72px; top: 60px; display: flex; align-items: center; gap: 14px; font-weight: 700; letter-spacing: -0.01em; font-size: 30px; }
   .brand svg { width: 38px; height: 38px; color: #a3e635; }
   .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
   .foot { position: absolute; left: 72px; bottom: 40px; font-size: 22px; color: #8b98a6; }
@@ -33,7 +33,7 @@ const BASE = `
   .chip { border-radius: 16px; position: relative; box-shadow: 0 20px 40px rgba(0,0,0,.5); }
   .chip::after { content: ""; position: absolute; left: 12%; top: 38%; width: 20%; height: 18%; border-radius: 5px; background: #fbbf24; opacity: .85; }
 `;
-const logo = CC.icon("bars");
+const logo = CC.icon("brandmark");
 
 function defaultHtml() {
   const top = CARDS.map((c) => ({ c, v: CC.firstYearValue(c) })).sort((a, b) => b.v - a.v).slice(0, 4);
@@ -50,7 +50,7 @@ function defaultHtml() {
     .bar { height: 8px; border-radius: 4px; background: #a3e635; margin-top: 8px; }
     .row .mono { font-size: 24px; color: #a3e635; }
   </style></head><body>
-    <div class="brand">${logo} LEDGER</div>
+    <div class="brand">${logo} CardCompass</div>
     <h1>What is each card <em>actually</em> worth to you?</h1>
     <p class="sub">Enter your spending. See every card's real value in dollars — bonus, rewards, credits and fees.</p>
     <div class="board"><h2>Year-one value · typical spending</h2>
@@ -75,7 +75,7 @@ function cardHtml(c) {
     .stats .mono { display: block; font-size: 40px; margin-top: 6px; }
     .lime { color: #a3e635; }
   </style></head><body>
-    <div class="brand">${logo} LEDGER</div>
+    <div class="brand">${logo} CardCompass</div>
     <div class="chip card" style="background:linear-gradient(135deg,${c.colors[0]},${c.colors[1]})"><span>${esc(c.name)}</span></div>
     <p class="issuer">${esc(c.issuer)} · ${REWARD_TYPES[c.rewardType]}</p>
     <h1>${esc(name)}<br><span class="q">Is it worth it?</span></h1>
@@ -90,7 +90,7 @@ function cardHtml(c) {
 }
 
 const iconHtml = (size, pad) => `<!doctype html><html><head><style>*{margin:0}body{width:${size}px;height:${size}px;background:#0b0f14;display:grid;place-items:center}</style></head><body>
-  <svg width="${size - pad * 2}" height="${size - pad * 2}" viewBox="0 0 32 32"><rect x="6.5" y="18" width="5" height="8" rx="1.2" fill="#a3e635"/><rect x="13.5" y="12" width="5" height="14" rx="1.2" fill="#a3e635"/><rect x="20.5" y="6" width="5" height="20" rx="1.2" fill="#a3e635"/></svg></body></html>`;
+  <svg width="${size - pad * 2}" height="${size - pad * 2}" viewBox="0 0 24 24" stroke-linecap="round" style="color:#a3e635"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M16.6 7.4 13.4 13.4 10.6 10.6z" fill="currentColor" stroke="none"/><path d="M7.4 16.6 10.6 10.6 13.4 13.4z" fill="currentColor" fill-opacity=".45" stroke="none"/></svg></body></html>`;
 
 mkdirSync(`${ROOT}/og`, { recursive: true });
 mkdirSync(`${ROOT}/icons`, { recursive: true });

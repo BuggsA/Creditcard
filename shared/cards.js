@@ -56,6 +56,7 @@
     x: '<path d="M6 6l12 12M18 6 6 18"/>',
     external: '<path d="M14 4h6v6M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
     heart: '<path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/>',
+    brandmark: '<circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2.2" fill="none"/><path d="M16.6 7.4 13.4 13.4 10.6 10.6z" fill="currentColor" stroke="none"/><path d="M7.4 16.6 10.6 10.6 13.4 13.4z" fill="currentColor" fill-opacity=".45" stroke="none"/>',
     bars: '<rect x="3" y="13" width="4.5" height="8" rx="1" fill="currentColor" stroke="none"/><rect x="9.75" y="8" width="4.5" height="13" rx="1" fill="currentColor" stroke="none"/><rect x="16.5" y="3" width="4.5" height="18" rx="1" fill="currentColor" stroke="none"/>',
   };
   const icon = (name, cls = "") =>

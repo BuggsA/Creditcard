@@ -6,7 +6,7 @@ Three standalone prototypes of a "find the credit card for you" site. Each one h
 | --- | --- | --- | --- |
 | [`a-finder/`](a-finder) | **CardCompass** | Clean, airy, light blue. Familiar "catalog" UX. | Tap benefit tiles → filter sidebar with chips + sort → card detail → side-by-side compare (up to 4, "only show differences"). |
 | [`b-matchmaker/`](b-matchmaker) | **Kindred** | Warm cream & coral, serif type, friendly copy. | 5-question quiz, one question per screen → one top pick with plain-English "why it fits you" → runners-up, head-to-head verdicts, full ranked list. |
-| [`c-explorer/`](c-explorer) | **Ledger** | Dark, data-dense, monospace numbers. For power users. | Enter your monthly spending (sliders/presets) + must-have toggles → sortable table of *your* dollar value per card, stacked value bars, expandable rows, compare dock that tells you what spending would flip the winner. See [Ledger features](#ledger-features). |
+| [`c-explorer/`](c-explorer) | **CardCompass** | Dark, data-dense, monospace numbers. For power users. | Enter your monthly spending (sliders/presets) + must-have toggles → sortable table of *your* dollar value per card, stacked value bars, expandable rows, compare dock that tells you what spending would flip the winner. See [CardCompass features](#cardcompass-features). |
 
 ## Card data
 
@@ -17,7 +17,7 @@ Three standalone prototypes of a "find the credit card for you" site. Each one h
 - **Values are estimates**: `pointValue` is our cents-per-point estimate, `credits[].value` is a realistic share of each credit's face value, and `caps` / `firstYearFee` are counted in the math.
 - Re-check offers regularly (monthly is a reasonable cadence) and update `AS_OF` when you do.
 
-## Ledger features
+## CardCompass features
 
 Built around the questions people ask most on card forums (e.g. r/CreditCards' recommendation template):
 
@@ -29,20 +29,20 @@ Built around the questions people ask most on card forums (e.g. r/CreditCards' r
 - **Your assumptions** — value points at simple redemptions (≈1¢), our estimate, or transfer partners (≈2¢); count credits at nothing, a realistic share, or full face value.
 - **Share setup** — the URL always encodes your spending, wallet and assumptions, so a link reproduces the exact table.
 
-## Ledger: search & sharing
+## CardCompass: search & sharing
 
-Ledger is built to be found in search and to look good when shared:
+CardCompass is built to be found in search and to look good when shared:
 
 - **Guide pages search engines can read** — `c-explorer/public/cards/<id>/` (one "is it worth it?" breakdown per card) and `c-explorer/public/best/<slug>/` (best cards for groceries, dining, travel, hotels, airlines, no annual fee, sign-up bonuses, 0% APR and building credit). Each links into the calculator with the matching spending pre-filled.
 - **Tags on every page** — title, description, canonical URL, Open Graph and Twitter/X preview tags, plus schema.org structured data (`CreditCard`, `ItemList`, `BreadcrumbList`, `WebApplication`).
 - **Share images** — a 1200×630 preview image for the home page and for every card (`c-explorer/public/og/`), plus app icons and a web app manifest for "Add to Home Screen".
 - **`sitemap.xml` and `robots.txt`**, and real 404s for unknown URLs.
-- **Home page FAQ** — a short "About Ledger" section (with `FAQPage` data) gives search engines readable text, since the table itself is drawn by JavaScript.
+- **Home page FAQ** — a short "About CardCompass" section (with `FAQPage` data) gives search engines readable text, since the table itself is drawn by JavaScript.
 - **Sharing in the app** — "Share setup" opens the phone's share sheet (or copies the link on desktop); each expanded card has "Share card" and "Full breakdown" links.
 
 Pages are written with a `{{SITE}}` placeholder. The small Worker in `c-explorer/src/worker.js` replaces it with whatever domain the site is served from, so canonical links, previews and the sitemap are correct on `workers.dev` and on a custom domain without any config.
 
-**When you add a custom domain**, set `SITE_URL` (uncomment `vars` in `c-explorer/wrangler.jsonc`, or add it under the Worker's Settings → Variables). Every page then names that domain as the real one, and visits to the `workers.dev` address are permanently redirected there, so Google doesn't index the same pages twice.
+**The real domain is set in `SITE_URL`** (`c-explorer/wrangler.jsonc`, currently `https://credit.loopi.sh`). Every page names that domain as the real one, and visits to any other address (like `workers.dev`) are permanently redirected there, so Google doesn't index the same pages twice. If the domain changes, update it there. Local `npm run dev` is never redirected.
 
 After editing card data, regenerate from the repo root:
 
@@ -51,11 +51,11 @@ node scripts/sync-cards.mjs
 ```
 
 ```bash
-node scripts/build-ledger-pages.mjs
+node scripts/build-cardcompass-pages.mjs
 ```
 
 ```bash
-node scripts/build-ledger-images.mjs
+node scripts/build-cardcompass-images.mjs
 ```
 
 The images script needs Playwright (`npm i -D playwright && npx playwright install chromium`). Once the site is live, submit `https://<your-domain>/sitemap.xml` in Google Search Console and Bing Webmaster Tools.
@@ -73,7 +73,7 @@ Or just open `public/index.html` with any static file server.
 
 ## Deploy to Cloudflare
 
-Each folder is its own Cloudflare Worker that serves static assets (`wrangler.jsonc` → `assets.directory: ./public`). Ledger also has a tiny Worker script for its search and sharing URLs (see above); it needs no extra setup. Worker names: `creditcard-finder`, `creditcard-matchmaker`, `creditcard-explorer`.
+Each folder is its own Cloudflare Worker that serves static assets (`wrangler.jsonc` → `assets.directory: ./public`). CardCompass also has a tiny Worker script for its search and sharing URLs (see above); it needs no extra setup. Worker names: `creditcard-finder`, `creditcard-matchmaker`, `creditcard-explorer`.
 
 **Git-connected (Workers Builds):** create one Worker per prototype, connect this repo, and set:
 

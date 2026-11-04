@@ -1,4 +1,4 @@
-/* Styles for Ledger's static guide pages (/cards/*, /best/*, 404). Matches the app's dark theme. */
+/* Styles for CardCompass's static guide pages (/cards/*, /best/*, 404). Matches the app's dark theme. */
 :root {
   --bg: #0b0f14;
   --bg-1: #10161d;
@@ -16,7 +16,7 @@ a { color: var(--lime); }
 .i { width: 1.1em; height: 1.1em; vertical-align: -0.18em; flex: none; }
 
 .top { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 56px; padding: 0 20px; background: rgba(11,15,20,.92); backdrop-filter: blur(6px); border-bottom: 1px solid var(--line); }
-.brand { display: flex; align-items: center; gap: 8px; color: var(--text); text-decoration: none; font-weight: 700; letter-spacing: .2em; font-size: 15px; }
+.brand { display: flex; align-items: center; gap: 8px; color: var(--text); text-decoration: none; font-weight: 700; letter-spacing: -0.01em; font-size: 17px; }
 .brand .glyph { color: var(--lime); width: 20px; height: 20px; }
 .cta-top { display: inline-flex; align-items: center; gap: 6px; background: var(--lime); color: #0b0f14; text-decoration: none; font-weight: 600; font-size: 14px; border-radius: 8px; padding: 7px 12px; }
 
