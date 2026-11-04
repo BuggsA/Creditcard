@@ -20,7 +20,7 @@ const TOTAL = Object.values(DEFAULT_SPEND).reduce((a, b) => a + b, 0);
 const fit = (...variants) => variants.find((t) => t.length <= 62) || variants[variants.length - 1];
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const COBRANDS = ["Marriott", "Hilton", "World of Hyatt", "Delta", "United", "Discover"];
+const COBRANDS = ["Marriott", "Hilton", "World of Hyatt", "Delta", "United", "Discover", "Costco", "IHG"];
 const fullName = (c) => (COBRANDS.some((b) => c.name.startsWith(b)) || c.name.startsWith(c.issuer) ? c.name : `${c.issuer} ${c.name}`);
 const appLink = (spend, extra = {}) => {
   const p = new URLSearchParams({ s: CATS.map((k) => spend[k] || 0).join("."), ...extra });
@@ -53,6 +53,9 @@ const LIST = [
   { slug: "airlines", title: "Best airline credit cards and perks", short: "Airline perks",
     intro: "Cards with free checked bags, lounge access or airline credits, ranked by first-year value for a frequent flyer.",
     spend: { dining: 400, groceries: 400, hotels: 300, airfare: 600, gas: 100, streaming: 30, other: 1000 }, filter: (c) => CC.matches(c, "airline_perks") || CC.matches(c, "lounge"), sort: "year1" },
+  { slug: "cash-back", title: "Best cash back credit cards", short: "Cash back",
+    intro: "Cash back cards ranked by what they're worth every year on typical spending — flat-rate, grocery, and rotating-category cards side by side, in plain dollars.",
+    spend: DEFAULT_SPEND, filter: (c) => c.rewardType === "cashback" && CC.rate(c, "other") > 0, sort: "ongoing" },
   { slug: "no-annual-fee", title: "Best no-annual-fee credit cards", short: "No annual fee",
     intro: "Cards that cost nothing to keep, ranked by what they earn each year on typical spending. A no-fee card is also the benchmark CardCompass uses to judge whether a fee card is worth it.",
     spend: DEFAULT_SPEND, filter: (c) => c.annualFee === 0 && CC.rate(c, "other") > 0, sort: "ongoing" },
@@ -113,7 +116,7 @@ function page({ path, title, description, image = "/og/default.png", imageAlt = 
 <body>
   <header class="top">
     <a class="brand" href="/">${CC.icon("brandmark", "glyph")} CardCompass</a>
-    <a class="cta-top" href="/">${CC.icon("sliders")} <span class="lg">Try it with your spending</span><span class="sm">Try it</span></a>
+    <a class="cta-top" href="/">${CC.icon("sliders")} <span class="label-long">Try it with your spending</span><span class="label-short">Try it</span></a>
   </header>
   <main class="wrap">
 ${body}
@@ -168,7 +171,7 @@ function cardPage(c) {
       <p class="lead">The ${esc(name)} has a ${feeLine}. For a typical household spending ${usd(TOTAL)} a month, it's worth about <b>${usd(v.year1)}</b> in year one and <b>${usd(v.ongoing)}</b> each year after.</p>
       <div class="stats">
         <div><span>Annual fee</span><b>${usd(c.annualFee)}</b>${c.firstYearFee === 0 && c.annualFee ? "<small>$0 the first year</small>" : ""}</div>
-        <div><span>Sign-up bonus</span><b>${CC.bonusValue(c) ? usd(CC.bonusValue(c)) : "None"}</b>${c.bonus.amount ? `<small>${esc(CC.bonusLabel(c))} after ${usd(c.bonus.spend)} in ${c.bonus.months} mo</small>` : ""}</div>
+        <div><span>Sign-up bonus</span><b>${CC.bonusValue(c) ? usd(CC.bonusValue(c)) : "None"}</b>${c.bonus.amount ? `<small>${esc(CC.bonusLabel(c))} ${CC.bonusTerms(c, true)}</small>` : ""}</div>
         <div><span>Net value · year 1</span><b class="lime">${usd(v.year1)}</b></div>
         <div><span>Net value · each year after</span><b>${usd(v.ongoing)}</b></div>
       </div>
@@ -291,5 +294,7 @@ const links = `<!-- seo:links -->
         <div><h2>Card breakdowns</h2>${CARDS.map((c) => `<a href="/cards/${c.id}/">${esc(fullName(c))}</a>`).join("")}</div>
       </section>
       <!-- /seo:links -->`;
-writeFileSync(`${ROOT}/index.html`, index.replace(/<!-- seo:links -->[\s\S]*?<!-- \/seo:links -->/, links));
+writeFileSync(`${ROOT}/index.html`, index
+  .replace(/<!-- seo:links -->[\s\S]*?<!-- \/seo:links -->/, links)
+  .replace(/\b\d+ popular credit cards\b/g, `${CARDS.length} popular credit cards`));
 console.log(`wrote ${CARDS.length} card pages, ${LIST.length} best-for pages, sitemap (${urls.length} URLs), robots.txt`);

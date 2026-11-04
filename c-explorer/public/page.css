@@ -101,5 +101,5 @@ h2 { font-size: 20px; margin: 36px 0 12px; letter-spacing: -0.01em; }
   .t { font-size: 14px; }
   .t th, .t td { padding: 8px 6px; }
 }
-.sm { display: none; }
-@media (max-width: 480px) { .lg { display: none; } .sm { display: inline; } }
+.label-short { display: none; }
+@media (max-width: 480px) { .label-long { display: none; } .label-short { display: inline; } }

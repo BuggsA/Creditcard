@@ -16,7 +16,7 @@ vm.runInNewContext(readFileSync(`${ROOT}/cards.js`, "utf8"), ctx);
 const CC = ctx.window.CC;
 const { CARDS, DEFAULT_SPEND, REWARD_TYPES, usd } = CC;
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const COBRANDS = ["Marriott", "Hilton", "World of Hyatt", "Delta", "United", "Discover"];
+const COBRANDS = ["Marriott", "Hilton", "World of Hyatt", "Delta", "United", "Discover", "Costco", "IHG"];
 const fullName = (c) => (COBRANDS.some((b) => c.name.startsWith(b)) || c.name.startsWith(c.issuer) ? c.name : `${c.issuer} ${c.name}`);
 const TOTAL = Object.values(DEFAULT_SPEND).reduce((a, b) => a + b, 0);
 
