@@ -20,7 +20,7 @@ const TOTAL = Object.values(DEFAULT_SPEND).reduce((a, b) => a + b, 0);
 const fit = (...variants) => variants.find((t) => t.length <= 62) || variants[variants.length - 1];
 
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-const COBRANDS = ["Marriott", "Hilton", "World of Hyatt", "Delta", "United", "Discover", "Costco", "IHG"];
+const COBRANDS = ["Marriott", "Hilton", "World of Hyatt", "Delta", "United", "Discover", "Costco", "IHG", "Southwest", "Amazon", "Apple"];
 const fullName = (c) => (COBRANDS.some((b) => c.name.startsWith(b)) || c.name.startsWith(c.issuer) ? c.name : `${c.issuer} ${c.name}`);
 const appLink = (spend, extra = {}) => {
   const p = new URLSearchParams({ s: CATS.map((k) => spend[k] || 0).join("."), ...extra });
@@ -30,10 +30,10 @@ const appLink = (spend, extra = {}) => {
 // ---------- value math (mirrors the app's defaults: typical spend, our point values, realistic credits) ----------
 function value(c, spend = DEFAULT_SPEND) {
   const rewards = CC.yearlyRewards(c, spend), credits = CC.creditsValue(c), bonus = CC.bonusValue(c);
-  return { bonus, rewards, credits, year1: CC.firstYearValue(c, spend), ongoing: CC.ongoingValue(c, spend) };
+  return { bonus, reachable: CC.bonusReachable(c, spend), rewards, credits, year1: CC.firstYearValue(c, spend), ongoing: CC.ongoingValue(c, spend) };
 }
 const bestNoFee = (spend, except) =>
-  CARDS.filter((c) => c.annualFee === 0 && c.id !== except).map((c) => ({ c, v: value(c, spend) })).sort((a, b) => b.v.ongoing - a.v.ongoing)[0];
+  CARDS.filter((c) => c.annualFee === 0 && c.id !== except && !c.business).map((c) => ({ c, v: value(c, spend) })).sort((a, b) => b.v.ongoing - a.v.ongoing)[0];
 
 // ---------- "best for" pages ----------
 const cents = (c, cat) => CC.rate(c, cat) * c.pointValue;
@@ -56,6 +56,9 @@ const LIST = [
   { slug: "cash-back", title: "Best cash back credit cards", short: "Cash back",
     intro: "Cash back cards ranked by what they're worth every year on typical spending — flat-rate, grocery, and rotating-category cards side by side, in plain dollars.",
     spend: DEFAULT_SPEND, filter: (c) => c.rewardType === "cashback" && CC.rate(c, "other") > 0, sort: "ongoing" },
+  { slug: "business", title: "Best small-business credit cards", short: "Business cards", business: true,
+    intro: "Business cards ranked by first-year value for a small business spending about $4,500 a month. Freelancers and sole proprietors can usually apply with their own name and Social Security number. Many big bonuses need several thousand dollars of spending in 3 months — CardCompass only counts a bonus when the spending below reaches it.",
+    spend: { dining: 400, groceries: 0, hotels: 300, airfare: 400, gas: 300, streaming: 40, other: 3060 }, filter: () => true, sort: "year1" },
   { slug: "no-annual-fee", title: "Best no-annual-fee credit cards", short: "No annual fee",
     intro: "Cards that cost nothing to keep, ranked by what they earn each year on typical spending. A no-fee card is also the benchmark CardCompass uses to judge whether a fee card is worth it.",
     spend: DEFAULT_SPEND, filter: (c) => c.annualFee === 0 && CC.rate(c, "other") > 0, sort: "ongoing" },
@@ -123,7 +126,8 @@ ${body}
   </main>
   <footer class="wrap foot">
     <nav aria-label="Best cards by category"><h2>Best cards for…</h2>${LIST.map((l) => `<a href="/best/${l.slug}/">${esc(l.short)}</a>`).join("")}</nav>
-    <p>Offers checked ${esc(CC.AS_OF)}. Terms change often and many vary by applicant — always confirm with the issuer before applying. Values are estimates using our point valuations and a realistic share of each card's credits. CardCompass never checks your credit.</p>
+    <p>Offers checked ${esc(CC.AS_OF)}. Terms change often and many vary by applicant — always confirm with the issuer before applying. Values are estimates using our point valuations and a realistic share of each card's credits. CardCompass never checks your credit. Not financial advice.</p>
+    <p class="links"><a href="/about/">About &amp; how we rank</a> · <a href="/privacy/">Privacy</a></p>
   </footer>
 </body>
 </html>
@@ -154,7 +158,7 @@ function cardPage(c) {
     verdict = `<p class="verdict good"><b>Worth keeping after year one</b> for typical spending: it nets about ${usd(v.ongoing - nf.v.ongoing)} a year more than the ${esc(fullName(nf.c))}, the best no-fee card for the same spending.</p>`;
   else
     verdict = `<p class="verdict warn"><b>Probably not worth the fee after year one</b> for typical spending: the no-fee ${esc(fullName(nf.c))} would net about ${usd(nf.v.ongoing - v.ongoing)} a year more. It can still make sense if you spend more in its bonus categories or use more of its credits.</p>`;
-  const similar = CARDS.filter((x) => x.id !== c.id && x.rewardType === c.rewardType).slice(0, 4);
+  const similar = CARDS.filter((x) => x.id !== c.id && x.rewardType === c.rewardType && !!x.business === !!c.business).slice(0, 4);
   const title = fit(`${name}: is it worth it? Real value calculator`, `${name}: is it worth it? Real value`, `${name}: is it worth it?`);
   const shortFee = c.annualFee ? `${usd(c.annualFee)} fee${c.firstYearFee === 0 ? " ($0 year 1)" : ""}` : "No annual fee";
   const description = `${name}: ${shortFee}, ${CC.bonusValue(c) ? `≈${usd(CC.bonusValue(c))} sign-up bonus` : "no sign-up bonus"}, ≈${usd(v.year1)} net value in year one. See what it's worth for your spending.`;
@@ -164,7 +168,7 @@ function cardPage(c) {
       <div class="hero">
         <span class="chip" style="background:linear-gradient(135deg,${c.colors[0]},${c.colors[1]})"></span>
         <div>
-          <p class="eyebrow">${esc(c.issuer)} · ${REWARD_TYPES[c.rewardType]} · ${esc(c.network)}</p>
+          <p class="eyebrow">${c.business ? "Business card · " : ""}${esc(c.issuer)} · ${REWARD_TYPES[c.rewardType]} · ${esc(c.network)}</p>
           <h1>${esc(name)}: what it's really worth</h1>
         </div>
       </div>
@@ -176,6 +180,7 @@ function cardPage(c) {
         <div><span>Net value · each year after</span><b>${usd(v.ongoing)}</b></div>
       </div>
       ${c.offerNote ? `<p class="note">${esc(c.offerNote)}</p>` : ""}
+      ${v.bonus && !v.reachable ? `<p class="note">The bonus needs about ${usd(CC.bonusMonthly(c))} a month of spending — more than the typical ${usd(TOTAL)} — so it isn't counted in the year-one value above.</p>` : ""}
       <a class="cta" href="${appLink(DEFAULT_SPEND, { card: c.id })}">${CC.icon("sliders")} Calculate it with your own spending</a>
 
       <h2>Is the annual fee worth it?</h2>
@@ -201,6 +206,7 @@ function cardPage(c) {
       <h2>Can I get it?</h2>
       <ul class="list">
         <li><b>Recommended credit:</b> ${CREDIT_TIERS[c.creditTier]}${c.secured ? ` · ${esc(c.secured)}` : ""}</li>
+        ${c.business ? `<li><b>Business card:</b> you apply as a business owner. Freelancers and sole proprietors can usually apply with their own name and Social Security number.</li>` : ""}
         <li><b>${esc(c.issuer)} rules:</b> ${esc(CC.issuerRule(c))}</li>
         <li><b>${esc(c.network)}:</b> ${esc(CC.networkNote(c))}</li>
       </ul>
@@ -221,7 +227,8 @@ function listPage(l) {
     bonus: (a, b) => b.v.bonus - a.v.bonus,
     apr: (a, b) => b.c.introApr - a.c.introApr || b.v.ongoing - a.v.ongoing,
   };
-  const rows = CARDS.filter(l.filter).map((c) => ({ c, v: value(c, l.spend) })).sort(sorters[l.sort]);
+  // Business cards get their own ranking; every other list is personal cards only.
+  const rows = CARDS.filter((c) => !!c.business === !!l.business && l.filter(c)).map((c) => ({ c, v: value(c, l.spend) })).sort(sorters[l.sort]);
   const total = Object.values(l.spend).reduce((a, b) => a + b, 0);
   const top = rows[0];
   const year = new Date(ISO_DATE).getUTCFullYear();
@@ -239,7 +246,7 @@ function listPage(l) {
         <li>
           <span class="n">${i + 1}</span>
           <span class="chip sm" style="background:linear-gradient(135deg,${c.colors[0]},${c.colors[1]})"></span>
-          <div class="who"><a href="/cards/${c.id}/"><b>${esc(fullName(c))}</b></a><small>${esc(c.bestFor[0])}</small></div>
+          <div class="who"><a href="/cards/${c.id}/"><b>${esc(fullName(c))}</b></a><small>${esc(c.bestFor[0])}${v.bonus && !v.reachable ? ` · bonus needs ≈${usd(CC.bonusMonthly(c))}/mo of spending` : ""}</small></div>
           <dl>
             <div><dt>Fee</dt><dd>${usd(c.annualFee)}</dd></div>
             ${l.sort === "apr" ? `<div><dt>0% APR</dt><dd>${c.introApr} mo</dd></div>` : `<div><dt>Bonus</dt><dd>${v.bonus ? usd(v.bonus) : "—"}</dd></div>`}
@@ -263,8 +270,60 @@ function listPage(l) {
   return page({ path: `/best/${l.slug}/`, title, description, jsonld, body });
 }
 
+// ---------- about & privacy ----------
+const PV = [...new Set(CARDS.filter((c) => c.rewardType !== "cashback").map((c) => c.pointValue))].sort((a, b) => a - b);
+function aboutPage() {
+  const body = `
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">CardCompass</a> › <span>About</span></nav>
+    <article>
+      <h1>About CardCompass and how we rank cards</h1>
+      <p class="lead">CardCompass is a free calculator that shows what ${CARDS.length} popular U.S. credit cards are worth for your own spending, in dollars. It never asks for personal details and never checks your credit.</p>
+
+      <h2>How we work out a card's value</h2>
+      <ul class="list">
+        <li><b>Sign-up bonus</b> — counted only if your monthly spending is enough to reach the bonus's spending requirement in time.</li>
+        <li><b>Rewards</b> — what the card earns on the spending you enter, category by category, respecting the card's yearly caps.</li>
+        <li><b>Credits</b> — a realistic share of each credit's face value, because most people don't use every dollar. You can count them in full or ignore them.</li>
+        <li><b>Fees</b> — the annual fee (or $0 when the first year is waived), and foreign transaction fees if you spend abroad.</li>
+      </ul>
+      <p>Points and miles are valued at our estimates of ${PV[0]}–${PV[PV.length - 1]}¢ each, depending on the program. In the calculator you can switch to simple redemptions (about 1¢) or transfer partners (about 2¢). "Year 2+" leaves out the bonus, so it shows whether a card is worth keeping once the bonus is spent.</p>
+
+      <h2>Where the numbers come from</h2>
+      <p>Card terms come from each issuer's own pages, cross-checked against major card-review sites. Offers were last checked ${esc(CC.AS_OF)}; we re-check them about once a month. Welcome offers change often and many are targeted, so where sources disagreed we show a note on the card. Rules like Chase's 5/24 are widely reported by applicants, not official policy. Interest rates (APRs) aren't listed because they depend on the applicant.</p>
+
+      <h2>How CardCompass makes money</h2>
+      <p>It doesn't. No card issuer pays to be listed or ranked, and the "check the current offer" links go straight to issuers' own sites with no affiliate tracking. Rankings come only from the math above.</p>
+
+      <h2>Not financial advice</h2>
+      <p>CardCompass gives estimates to help you compare cards, not personal financial advice. Always read the issuer's terms before you apply, and remember that rewards rarely outweigh the cost of carrying a balance.</p>
+      <p class="small">Updated ${esc(CC.AS_OF)}.</p>
+    </article>`;
+  const jsonld = { "@context": "https://schema.org", "@graph": [crumbs([["CardCompass", "/"], ["About", "/about/"]])] };
+  return page({ path: "/about/", title: "About CardCompass: how we rank credit cards", description: "How CardCompass works out what each credit card is worth: bonuses, rewards, credits and fees, where the data comes from, and why no issuer pays to be ranked.", jsonld, body });
+}
+function privacyPage() {
+  const body = `
+    <nav class="crumbs" aria-label="Breadcrumb"><a href="/">CardCompass</a> › <span>Privacy</span></nav>
+    <article>
+      <h1>Privacy</h1>
+      <p class="lead">CardCompass has no accounts, no ads and no tracking cookies. The spending you enter stays in your browser.</p>
+      <h2>What's stored, and where</h2>
+      <ul class="list">
+        <li><b>Your settings</b> (spending, filters, cards you have) are saved in your own browser's local storage so they're there next time, and in the page address so a shared link shows the same table. They're never sent to us.</li>
+        <li><b>No analytics or advertising trackers</b> run on this site.</li>
+        <li><b>Hosting:</b> the site is served by Cloudflare, which keeps standard server logs (such as IP addresses) to run and protect the service.</li>
+        <li><b>Fonts</b> load from Google Fonts, so Google receives your IP address when a page loads.</li>
+        <li><b>Issuer links</b> take you to the card issuer's site, where their privacy policy applies.</li>
+      </ul>
+      <p>To clear your saved settings, clear this site's data in your browser.</p>
+      <p class="small">Updated ${esc(CC.AS_OF)}.</p>
+    </article>`;
+  const jsonld = { "@context": "https://schema.org", "@graph": [crumbs([["CardCompass", "/"], ["Privacy", "/privacy/"]])] };
+  return page({ path: "/privacy/", title: "Privacy — CardCompass", description: "CardCompass has no accounts, ads or tracking cookies. Your spending stays in your browser. Here's exactly what is stored and where.", jsonld, body });
+}
+
 // ---------- write everything ----------
-for (const dir of ["cards", "best"]) if (existsSync(`${ROOT}/${dir}`)) rmSync(`${ROOT}/${dir}`, { recursive: true });
+for (const dir of ["cards", "best", "about", "privacy"]) if (existsSync(`${ROOT}/${dir}`)) rmSync(`${ROOT}/${dir}`, { recursive: true });
 for (const c of CARDS) {
   mkdirSync(`${ROOT}/cards/${c.id}`, { recursive: true });
   writeFileSync(`${ROOT}/cards/${c.id}/index.html`, cardPage(c));
@@ -274,7 +333,12 @@ for (const l of LIST) {
   writeFileSync(`${ROOT}/best/${l.slug}/index.html`, listPage(l));
 }
 
-const urls = ["/", ...LIST.map((l) => `/best/${l.slug}/`), ...CARDS.map((c) => `/cards/${c.id}/`)];
+for (const [dir, html] of [["about", aboutPage()], ["privacy", privacyPage()]]) {
+  mkdirSync(`${ROOT}/${dir}`, { recursive: true });
+  writeFileSync(`${ROOT}/${dir}/index.html`, html);
+}
+
+const urls = ["/", "/about/", "/privacy/", ...LIST.map((l) => `/best/${l.slug}/`), ...CARDS.map((c) => `/cards/${c.id}/`)];
 writeFileSync(`${ROOT}/sitemap.xml`, `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 ${urls.map((u) => `  <url><loc>{{SITE}}${u}</loc><lastmod>${ISO_DATE}</lastmod></url>`).join("\n")}
@@ -292,6 +356,7 @@ const links = `<!-- seo:links -->
       <section class="seo-links" aria-label="Guides">
         <div><h2>Best cards for…</h2>${LIST.map((l) => `<a href="/best/${l.slug}/">${esc(l.short)}</a>`).join("")}</div>
         <div><h2>Card breakdowns</h2>${CARDS.map((c) => `<a href="/cards/${c.id}/">${esc(fullName(c))}</a>`).join("")}</div>
+        <div><h2>CardCompass</h2><a href="/about/">About &amp; how we rank</a><a href="/privacy/">Privacy</a></div>
       </section>
       <!-- /seo:links -->`;
 writeFileSync(`${ROOT}/index.html`, index

@@ -103,3 +103,6 @@ h2 { font-size: 20px; margin: 36px 0 12px; letter-spacing: -0.01em; }
 }
 .label-short { display: none; }
 @media (max-width: 480px) { .label-long { display: none; } .label-short { display: inline; } }
+.foot .links { margin-top: 8px; }
+.foot .links a { color: var(--text); }
+.foot .links a:hover { color: var(--lime); }

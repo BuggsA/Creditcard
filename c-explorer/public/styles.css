@@ -328,3 +328,5 @@ a.brand { color: var(--text); text-decoration: none; }
 .about summary { cursor: pointer; padding: 10px 0; font-size: 14px; color: var(--text); }
 .about summary:hover { color: var(--lime); }
 .about p { margin: 0 0 12px; font-size: 13px; line-height: 1.55; color: var(--muted); }
+td.num s { color: var(--muted); text-decoration-color: var(--muted); }
+.kv.warn span { color: #fbbf24; }

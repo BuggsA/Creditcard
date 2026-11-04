@@ -14,7 +14,7 @@
 
   const DEFAULTS = {
     spend: { ...DEFAULT_SPEND }, must: [], maxFee: 900, credit: "excellent", horizon: 1,
-    wallet: [], n524: 0, hide524: false, superstore: 0, abroad: 0, pv: "typical", creditMode: "realistic",
+    wallet: [], n524: 0, hide524: false, biz: true, superstore: 0, abroad: 0, pv: "typical", creditMode: "realistic",
   };
   const state = {
     ...DEFAULTS, spend: { ...DEFAULTS.spend },
@@ -22,7 +22,7 @@
   };
 
   // ---------- persistence: shareable URL first, then this browser's last setup ----------
-  const SHARE_KEYS = { m: "must", f: "maxFee", cr: "credit", h: "horizon", w: "wallet", n: "n524", x: "hide524", g: "superstore", a: "abroad", pv: "pv", cm: "creditMode" };
+  const SHARE_KEYS = { m: "must", f: "maxFee", cr: "credit", h: "horizon", w: "wallet", n: "n524", x: "hide524", b: "biz", g: "superstore", a: "abroad", pv: "pv", cm: "creditMode" };
   const LISTS = ["must", "wallet"];
   function toHash() {
     const p = new URLSearchParams();
@@ -113,7 +113,8 @@
     }
     const ab = abroadNet(a);
     rewards += hasWallet ? Math.max(0, ab - ctx.wallet.best.abroad) : ab;
-    const bonus = CC.bonusValue(a), credits = CC.creditsValue(a), fee = c.annualFee;
+    const reachable = CC.bonusReachable(c, ctx.sp);
+    const bonus = reachable ? CC.bonusValue(a) : 0, credits = CC.creditsValue(a), fee = c.annualFee;
     const feeTotal = CC.firstYearFee(c) + (H - 1) * fee;
     const ongoing = rewards + credits - fee;
     return {
@@ -121,6 +122,7 @@
       net: bonus + H * (rewards + credits) - feeTotal,
       pos: bonus + H * Math.max(0, rewards + credits),
       blocked524: likely524(c),
+      missedBonus: !reachable && CC.bonusValue(a) > 0,
     };
   }
   const likely524 = (c) => c.issuer === "Chase" && state.n524 >= 5;
@@ -128,6 +130,7 @@
   function visible(c) {
     if (state.wallet.includes(c.id)) return false;
     if (state.hide524 && likely524(c)) return false;
+    if (!state.biz && c.business) return false;
     if (c.annualFee > state.maxFee) return false;
     if (!tierOk[state.credit].includes(c.creditTier)) return false;
     if (!state.must.every((k) => CC.matches(c, k))) return false;
@@ -139,8 +142,12 @@
   }
   function buildCtx() {
     ctx = { sp: effSpend(), wallet: walletBaseline(effSpend()) };
-    ctx.noFee = CARDS.filter((c) => c.annualFee === 0 && !state.wallet.includes(c.id))
+    // Best no-fee card for this spending: the yardstick for "is the fee worth it?".
+    // Personal cards are compared with personal cards, business cards with business cards.
+    const best = (biz) => CARDS.filter((c) => c.annualFee === 0 && !!c.business === biz && !state.wallet.includes(c.id))
       .map(calc).sort((x, y) => y.ongoing - x.ongoing)[0];
+    ctx.noFee = best(false);
+    ctx.noFeeBiz = best(true);
   }
 
   // ---------- panel ----------
@@ -186,6 +193,7 @@
     num("#superstore", "superstore");
     num("#fee", "maxFee");
     $("#hide524").onchange = (e) => { state.hide524 = e.target.checked; render(); };
+    $("#biz").onchange = (e) => { state.biz = e.target.checked; render(); };
     $("#credit").onchange = (e) => { state.credit = e.target.value; render(); };
     $("#horizon").onchange = (e) => { state.horizon = +e.target.value; render(); };
     $("#pv").onchange = (e) => { state.pv = e.target.value; render(); };
@@ -207,6 +215,7 @@
     if (state.credit !== "excellent") out.push(`${CREDIT_TIERS[state.credit]} credit`);
     if (state.horizon > 1) out.push(`${state.horizon}-year view`);
     if (state.wallet.length) out.push(`${state.wallet.length} card${state.wallet.length > 1 ? "s" : ""} I have`);
+    if (!state.biz) out.push("Personal cards only");
     if (state.n524) out.push(`${state.n524} new cards / 24 mo`);
     if (state.superstore) out.push(`${state.superstore}% groceries at superstores`);
     if (state.abroad) out.push(`${usd(state.abroad)}/yr abroad`);
@@ -257,6 +266,7 @@
       if ($(id) !== skip) $(id).value = state[key];
     }
     $("#hide524").checked = state.hide524;
+    $("#biz").checked = state.biz;
     $("#ss-out").textContent = state.superstore + "%";
     $("#fee-out").textContent = state.maxFee >= 900 ? "any" : "≤ " + usd(state.maxFee);
     $("#credit").value = state.credit;
@@ -302,7 +312,8 @@
       render();
     })
   );
-  const beatsNoFee = (r) => r.fee > 0 && ctx.noFee && r.ongoing > ctx.noFee.ongoing;
+  const noFeeFor = (r) => (r.c.business ? ctx.noFeeBiz : ctx.noFee);
+  const beatsNoFee = (r) => r.fee > 0 && noFeeFor(r) && r.ongoing > noFeeFor(r).ongoing;
 
   function render() {
     persist();
@@ -356,9 +367,9 @@
         return `
         <tr class="row ${state.open === c.id ? "open" : ""}" data-id="${c.id}">
           <td class="c-sel"><input type="checkbox" data-sel="${c.id}" ${state.selected.includes(c.id) ? "checked" : ""} aria-label="Compare ${esc(c.name)}"/></td>
-          <td><div class="cname"><span class="rank">${i + 1}</span><span class="chipart" style="background:linear-gradient(135deg,${c.colors[0]},${c.colors[1]})"></span><span><b>${esc(c.name)}${r.blocked524 ? `<span class="flag warn" title="You've opened 5+ cards in 24 months — Chase usually declines">5/24</span>` : ""}</b><small>${esc(c.issuer)}<span class="rtype"> · ${REWARD_TYPES[c.rewardType]}</span><span class="flag net">${c.network}</span></small><span class="mline"><span>Bonus <b>${r.bonus ? usd(r.bonus) : "—"}</b></span><span>Yr 2+ <b>${usd(r.ongoing)}</b>${beatsNoFee(r) ? " ▲" : ""}</span></span>${bar.replace('class="bar"', 'class="bar mbar"')}</span></div></td>
+          <td><div class="cname"><span class="rank">${i + 1}</span><span class="chipart" style="background:linear-gradient(135deg,${c.colors[0]},${c.colors[1]})"></span><span><b>${esc(c.name)}${r.blocked524 ? `<span class="flag warn" title="You've opened 5+ cards in 24 months — Chase usually declines">5/24</span>` : ""}</b><small>${esc(c.issuer)}<span class="rtype"> · ${REWARD_TYPES[c.rewardType]}</span><span class="flag net">${c.network}</span>${c.business ? `<span class="flag net" title="Small-business card">Business</span>` : ""}</small><span class="mline"><span>Bonus <b>${r.bonus ? usd(r.bonus) : "—"}</b></span><span>Yr 2+ <b>${usd(r.ongoing)}</b>${beatsNoFee(r) ? " ▲" : ""}</span></span>${bar.replace('class="bar"', 'class="bar mbar"')}</span></div></td>
           <td class="num ${r.fee ? "" : "zero"}">${r.fee ? usd(r.fee) : "$0"}${c.firstYearFee === 0 && r.fee ? `<small class="yr1">$0 yr 1</small>` : ""}</td>
-          <td class="num ${r.bonus ? "" : "zero"}">${r.bonus ? usd(r.bonus) : "—"}</td>
+          <td class="num ${r.bonus ? "" : "zero"}"${r.missedBonus ? ` title="Needs ${usd(CC.bonusMonthly(c))}/mo of spending — more than yours"` : ""}>${r.bonus ? usd(r.bonus) : r.missedBonus ? `<s>${usd(CC.bonusValue(r.a))}</s>` : "—"}</td>
           <td class="num">${usd(r.rewards)}</td>
           <td class="num ${r.credits ? "" : "zero"}">${r.credits ? usd(r.credits) : "—"}</td>
           <td class="num net ${r.net < 0 ? "bad" : ""}">${usd(r.net)}</td>
@@ -373,7 +384,7 @@
 
   // "Should I keep paying the fee after year one?" — the most-asked question about fee cards.
   function feeVerdict(r) {
-    const nf = ctx.noFee;
+    const nf = noFeeFor(r);
     if (!r.fee || !nf) return "";
     const gap = r.ongoing - nf.ongoing;
     const name = esc(nf.c.name);
@@ -384,6 +395,7 @@
     const face = CC.creditsFace(r.c);
     let s = `<div class="verdict no"><b>Fee probably not worth it after year one.</b> ${name} (no fee) would net about ${usd(-gap)}/yr more. `;
     if (face && needed <= face) s += `It only breaks even if you get at least ${usd(needed)}/yr out of its ${usd(face)} in credits.`;
+    else if (r.missedBonus) s += `Its bonus also needs more spending than yours, so it's hard to justify.`;
     else s += `Consider grabbing the bonus, then downgrading to a no-fee card before the second fee posts.`;
     return s + "</div>";
   }
@@ -408,6 +420,7 @@
       </div>
       <div class="rules"><h4>Can I get it?</h4>
         <p><b>Credit:</b> ${CREDIT_TIERS[c.creditTier]}${c.secured ? ` · ${esc(c.secured)}` : ""}</p>
+        ${c.business ? `<p><b>Business card:</b> you apply as a business owner — freelancers and sole proprietors can usually use their own name and SSN.</p>` : ""}
         ${r.blocked524 ? `<p><b style="color:#fbbf24">Likely denied:</b> you've opened ${state.n524} cards in 24 months (Chase 5/24).</p>` : ""}
         <p><b>${esc(c.issuer)}:</b> ${esc(CC.issuerRule(c))}</p>
         <p><b>${c.network}:</b> ${esc(CC.networkNote(c))}</p>
@@ -415,6 +428,7 @@
       </div>
       <div><h4>Terms</h4>
         <div class="kv"><span>Bonus</span><span>${c.bonus.amount ? `${esc(CC.bonusLabel(c))} ${CC.bonusTerms(c, true)}` : "none"}</span></div>
+        ${r.missedBonus ? `<div class="kv warn"><span>Not counted</span><span>needs ≈${usd(CC.bonusMonthly(c))}/mo; you spend ${usd(CC.monthlyTotal(ctx.sp))}/mo</span></div>` : ""}
         <div class="kv"><span>Point value</span><span>${c.rewardType === "cashback" ? "cash" : +a.pointValue.toFixed(2) + "¢"}</span></div>
         ${a.credits.map((x) => `<div class="kv"><span>${esc(x.label)}</span><span>${usd(x.amount)}${x.value !== x.amount ? ` <i class="real">≈${usd(x.value)}</i>` : ""}</span></div>`).join("")}
         ${c.perks.map((p) => `<div class="kv"><span>${PERKS[p]}</span><span class="yes">${CC.icon("check")}</span></div>`).join("")}

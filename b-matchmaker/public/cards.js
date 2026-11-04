@@ -10,7 +10,7 @@
  * run `node scripts/sync-cards.mjs` from the repo root after editing this file.
  */
 (function () {
-  const AS_OF = "Oct 30, 2026";
+  const AS_OF = "Nov 4, 2026";
 
   const CATEGORIES = {
     dining: { label: "Dining", icon: "dining" },
@@ -109,6 +109,8 @@
     "Wells Fargo": "https://creditcards.wellsfargo.com/",
     Discover: "https://www.discover.com/credit-cards/",
     "Bank of America": "https://www.bankofamerica.com/credit-cards/",
+    "Goldman Sachs": "https://www.apple.com/apple-card/",
+    Bilt: "https://www.bilt.com/card",
   };
 
   // Application & bonus rules people ask about most. Issuers don't publish all of these;
@@ -120,6 +122,8 @@
     Citi: "One welcome bonus per card family every 48 months. Citi also limits how often you can apply (about 1 card per 8 days, 2 per 65 days).",
     "Wells Fargo": "Bonus and intro APR may be withheld if you opened another Wells Fargo card in the last 6 months.",
     Discover: "Cashback Match is for new Discover cardmembers only.",
+    "Goldman Sachs": "You apply in the Wallet app on an iPhone and see your offer before accepting it. Chase is set to take over as issuer (expected around 2028); Apple and Chase say nothing changes for cardholders in the meantime.",
+    Bilt: "Issued by Column N.A. and serviced by Cardless. Bilt Cash and rewards on rent and mortgage payments have their own rules — read them on bilt.com.",
     "Bank of America": "Often limits new cards to about 2 in 2 months, 3 in 12 months and 4 in 24 months. The bonus may be unavailable if you've had this card in the last 24 months.",
   };
 
@@ -140,7 +144,9 @@
    * earn = direct-purchase rates; portal-only rates go in earnNote.
    * caps = yearly spend per category before the rate drops to capRate (default 1).
    * firstYearFee = intro annual fee when the first year is waived.
-   * bonus.value/bonus.label override the computed bonus for non-point bonuses (e.g. free nights).
+   * bonus.value/bonus.label override the computed bonus for non-point bonuses (e.g. free nights);
+   * bonus.when describes bonuses with no spending requirement (e.g. "on approval").
+   * business = small-business card (sole proprietors and freelancers can usually apply too).
    */
   const CARDS = [
     // ---------- Flexible travel points ----------
@@ -575,6 +581,111 @@
       bestFor: ["Fair credit — 1.5% back on everything", "No foreign transaction fees"],
       notFor: ["Good credit — the no-fee Quicksilver earns the same"],
     },
+    // ---------- Added Nov 4, 2026 ----------
+    {
+      id: "prime-visa", network: "Visa", name: "Amazon Prime Visa", issuer: "Chase",
+      colors: ["#0f1a2b", "#ff9900"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
+      bonus: { amount: 150, unit: "usd", spend: 0, months: 0, when: "on approval", label: "$150 Amazon gift card" },
+      offerNote: "Paid as an Amazon gift card on approval, for Prime members only. The amount has ranged from $100 to $250 depending on the season.",
+      earn: { dining: 2, gas: 2, other: 1 },
+      earnNote: "5% at Amazon, Whole Foods and Chase Travel with a Prime membership (3% without); 2% at restaurants, gas stations and on local transit and commuting.",
+      credits: [cr("other", 96, "Extra 4% at Amazon & Whole Foods", "Counted at about $200 a month of Amazon and Whole Foods spending", 96)],
+      perks: ["purchase_protection"], ftf: false, introApr: 0,
+      bestFor: ["Prime members who shop at Amazon or Whole Foods every month", "A no-fee card with no foreign transaction fees"],
+      notFor: ["People without Prime ($139/yr) — the rate drops to 3%", "Anyone who rarely shops at Amazon"],
+    },
+    {
+      id: "apple-card", network: "Mastercard", name: "Apple Card", issuer: "Goldman Sachs",
+      colors: ["#e5e7eb", "#ffffff"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
+      bonus: { amount: 0, unit: "usd", spend: 0, months: 0 },
+      earn: { other: 2 },
+      earnNote: "2% Daily Cash when you pay with Apple Pay (counted on all spending here); only 1% with the physical card. 3% at Apple and a changing list of partner merchants. Needs an iPhone.",
+      credits: [], perks: [], ftf: false, introApr: 0,
+      bestFor: ["iPhone users who pay with Apple Pay almost everywhere", "Simple cash back paid daily, with no fees at all"],
+      notFor: ["Anyone without an iPhone", "Shops that don't take Apple Pay — the physical card earns just 1%"],
+    },
+    {
+      id: "bilt-obsidian", network: "Mastercard", name: "Bilt Obsidian", issuer: "Bilt",
+      colors: ["#0a0a0a", "#3f3f46"], annualFee: 95, creditTier: "good", rewardType: "points", pointValue: 1.5,
+      bonus: { amount: 200, unit: "usd", spend: 0, months: 0, when: "on approval", label: "$200 Bilt Cash" },
+      offerNote: "The bonus is Bilt Cash, which you spend through Bilt (for example to unlock points on rent) rather than withdraw as cash.",
+      earn: { dining: 3, airfare: 2, hotels: 2, other: 1 },
+      earnNote: "3x on dining or groceries — you pick one for the year (groceries capped at $25K/yr; dining counted here); 2x on travel. Points on rent and mortgage payments come through Bilt Cash and aren't counted here.",
+      credits: [cr("hotel", 100, "Bilt Travel hotel credit", "$50 twice a year on 2+ night stays booked through Bilt Travel", 60)],
+      perks: [], ftf: false, introApr: 0,
+      bestFor: ["Renters and homeowners who want points on housing payments", "Diners who want 3x on restaurants for $95"],
+      notFor: ["Anyone who wants simple rewards — rent rewards run through Bilt Cash rules"],
+    },
+    {
+      id: "southwest-plus", network: "Visa", name: "Southwest Rapid Rewards Plus", issuer: "Chase",
+      colors: ["#304cb2", "#e4162d"], annualFee: 99, creditTier: "good", rewardType: "airline", pointValue: 1.3,
+      bonus: { amount: 50000, unit: "points", spend: 1000, months: 3 },
+      offerNote: "Southwest has also sent offers of up to 80,000 points to Rapid Rewards members who opted in to its emails.",
+      earn: { airfare: 2, hotels: 2, streaming: 2, other: 1 },
+      earnNote: "2x on Southwest, Rapid Rewards hotel and car partners, local transit and rideshare, and internet, cable, phone and select streaming. 3,000 bonus points every card anniversary.",
+      credits: [cr("airline", 39, "3,000 anniversary points", "Added every year on your card anniversary", 39)],
+      perks: ["free_bag"], ftf: false, introApr: 0,
+      bestFor: ["Southwest flyers who check a bag — first bag free for you and up to 8 people on your reservation", "A cheap way to start toward the Companion Pass"],
+      notFor: ["People who rarely fly Southwest"],
+    },
+    // ---------- Small-business cards ----------
+    {
+      id: "chase-ink-preferred", network: "Visa", name: "Ink Business Preferred", issuer: "Chase", business: true,
+      colors: ["#0b1f3a", "#4b6b8f"], annualFee: 95, creditTier: "good", rewardType: "points", pointValue: 1.5,
+      bonus: { amount: 100000, unit: "points", spend: 8000, months: 3 },
+      earn: { airfare: 3, hotels: 3, other: 1 },
+      earnNote: "3x on the first $150K a year combined on travel, shipping, internet, cable and phone, and social media and search ads.",
+      caps: { airfare: 150000, hotels: 150000 },
+      credits: [], perks: ["cell_protection", "purchase_protection"], ftf: false, introApr: 0,
+      bestFor: ["Small businesses that spend on travel, ads, shipping or phone bills", "The biggest Chase points bonus"],
+      notFor: ["Anyone who can't put $8,000 on the card in 3 months"],
+    },
+    {
+      id: "chase-ink-unlimited", network: "Visa", name: "Ink Business Unlimited", issuer: "Chase", business: true,
+      colors: ["#123a5c", "#5d8fb8"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
+      bonus: { amount: 750, unit: "usd", spend: 6000, months: 3 },
+      offerNote: "Chase ran a $1,000 offer until September 2026. You can earn the bonus on Ink Business Unlimited or Ink Business Cash, but not both.",
+      earn: { other: 1.5 },
+      earnNote: "1.5% on everything. Cash back can be moved to a Sapphire or Ink Preferred card as Chase points.",
+      credits: [], perks: ["purchase_protection"], ftf: true, introApr: 12,
+      bestFor: ["Flat-rate rewards on business spending with no annual fee", "Pairing with Ink Preferred or a Sapphire card"],
+      notFor: ["Spending abroad (3% foreign fee)"],
+    },
+    {
+      id: "chase-ink-cash", network: "Visa", name: "Ink Business Cash", issuer: "Chase", business: true,
+      colors: ["#1e3a5f", "#7aa6cf"], annualFee: 0, creditTier: "good", rewardType: "cashback", pointValue: 1,
+      bonus: { amount: 750, unit: "usd", spend: 6000, months: 3 },
+      offerNote: "Chase ran a $1,000 offer until September 2026. You can earn the bonus on Ink Business Cash or Ink Business Unlimited, but not both.",
+      earn: { dining: 2, gas: 2, streaming: 5, other: 1 },
+      earnNote: "5% on the first $25K a year at office supply stores and on internet, cable and phone (streaming counted here); 2% on the first $25K a year at gas stations and restaurants.",
+      caps: { dining: 25000, gas: 25000, streaming: 25000 },
+      credits: [], perks: ["purchase_protection"], ftf: true, introApr: 12,
+      bestFor: ["Businesses with phone, internet or office-supply bills", "Pairing with Ink Preferred or a Sapphire card"],
+      notFor: ["Spending abroad (3% foreign fee)"],
+    },
+    {
+      id: "amex-blue-business-plus", network: "Amex", name: "Blue Business Plus", issuer: "American Express", business: true,
+      colors: ["#0b3b8c", "#60a5fa"], annualFee: 0, creditTier: "good", rewardType: "points", pointValue: 1.5,
+      bonus: { amount: 50000, unit: "points", spend: 5000, months: 3 },
+      offerNote: "Some applicants are targeted for up to 75,000 points. Earlier in 2026 the public offer was 15,000 points.",
+      earn: { other: 2 },
+      earnNote: "2x Membership Rewards points on the first $50K of purchases each year, then 1x.",
+      caps: { other: 50000 },
+      credits: [], perks: ["purchase_protection"], ftf: true, ftfRate: "2.7%", introApr: 12,
+      bestFor: ["2x points on everything with no annual fee", "Earning transferable Amex points without a fee"],
+      notFor: ["Spending abroad (2.7% foreign fee)", "Businesses spending over $50K a year"],
+    },
+    {
+      id: "capital-one-spark-cash-plus", network: "Visa/Mastercard", name: "Spark Cash Plus", issuer: "Capital One", business: true,
+      colors: ["#1f2937", "#9ca3af"], annualFee: 150, creditTier: "excellent", rewardType: "cashback", pointValue: 1,
+      bonus: { amount: 2000, unit: "usd", spend: 30000, months: 3 },
+      offerNote: "The bonus needs $30,000 of spending in 3 months — aimed at businesses with big expenses.",
+      earn: { other: 2 },
+      earnNote: "2% on everything; 5% on hotels and rental cars booked through Capital One Business Travel. $150 back each year you spend $150K+. Charge card: you pay the balance in full each month.",
+      credits: [], perks: [], ftf: false, introApr: 0,
+      bestFor: ["High-spending businesses that want simple 2% cash back", "A very large bonus if you can meet the spending"],
+      notFor: ["Small spenders — the fee only pays off above about $7,500 a year compared with a no-fee 1.5% card", "Carrying a balance (it's a charge card)"],
+    },
   ];
 
   // Monthly spend used when the visitor hasn't told us theirs.
@@ -599,9 +710,18 @@
   // "after spending $4,000 in 3 months", or "in your first year" for bonuses with no spending requirement.
   function bonusTerms(c, short = false) {
     if (!c.bonus.amount) return "";
+    if (c.bonus.when) return c.bonus.when;
     if (!c.bonus.spend) return "in your first year";
     return short ? `after ${usd(c.bonus.spend)} in ${c.bonus.months} mo` : `after spending ${usd(c.bonus.spend)} in ${c.bonus.months} months`;
   }
+  // Can this spending earn the bonus? (monthly total × the offer's months ≥ required spend)
+  const monthlyTotal = (spend = DEFAULT_SPEND) => Object.values(spend).reduce((a, b) => a + (b || 0), 0);
+  function bonusReachable(c, spend = DEFAULT_SPEND) {
+    if (!c.bonus.spend || !c.bonus.months) return true;
+    return monthlyTotal(spend) * c.bonus.months >= c.bonus.spend;
+  }
+  // Monthly spending needed to earn the bonus in time.
+  const bonusMonthly = (c) => (c.bonus.spend && c.bonus.months ? Math.ceil(c.bonus.spend / c.bonus.months) : 0);
   function rate(c, cat) {
     return c.earn[cat] ?? c.earn.other ?? 1;
   }
@@ -630,8 +750,8 @@
   function firstYearFee(c) {
     return c.firstYearFee ?? c.annualFee;
   }
-  function firstYearValue(c, spend) {
-    return bonusValue(c) + yearlyRewards(c, spend) + creditsValue(c) - firstYearFee(c);
+  function firstYearValue(c, spend = DEFAULT_SPEND) {
+    return (bonusReachable(c, spend) ? bonusValue(c) : 0) + yearlyRewards(c, spend) + creditsValue(c) - firstYearFee(c);
   }
   function ongoingValue(c, spend) {
     return yearlyRewards(c, spend) + creditsValue(c) - c.annualFee;
@@ -662,7 +782,7 @@
   const matches = (c, key) => MATCHERS[key](c);
 
   // Lowercase a label's first letter for use mid-sentence, keeping brand names ("Uber Cash", "The Edit") intact.
-  const BRANDS = /^(Uber|Resy|Dunkin|StubHub|The Edit|Hilton|Delta|United|Capital One|CLEAR|Marriott|Hyatt|Chase)/;
+  const BRANDS = /^(Bilt|Uber|Resy|Dunkin|StubHub|The Edit|Hilton|Delta|United|Capital One|CLEAR|Marriott|Hyatt|Chase)/;
   const midSentence = (s) => (BRANDS.test(s) ? s : s.charAt(0).toLowerCase() + s.slice(1));
 
   // Short, human highlight lines for a card; benefits the visitor asked for come first.
@@ -690,7 +810,7 @@
 
   window.CC = {
     AS_OF, ICONS, icon, CATEGORIES, BENEFITS, PERKS, CREDIT_TIERS, REWARD_TYPES, CARDS, DEFAULT_SPEND,
-    usd, bonusValue, bonusLabel, bonusSentence, bonusTerms, rate, rateLabel, creditsValue, creditsFace, firstYearFee,
+    usd, bonusValue, bonusReachable, bonusMonthly, monthlyTotal, bonusLabel, bonusSentence, bonusTerms, rate, rateLabel, creditsValue, creditsFace, firstYearFee,
     midSentence, yearlyRewards, firstYearValue, ongoingValue, topEarn, matches, highlights,
     issuerUrl: (c) => ISSUER_URLS[c.issuer],
     issuerRule: (c) => ISSUER_RULES[c.issuer],

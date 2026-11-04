@@ -10,7 +10,7 @@ Three standalone prototypes of a "find the credit card for you" site. Each one h
 
 ## Card data
 
-`shared/cards.js` holds 36 real US cards (Chase, American Express, Capital One, Citi, Wells Fargo, Bank of America, Discover), covering travel, hotel, airline, cash back, 0% APR and credit-building cards. Offers were researched from issuer pages and card-review sites on the `AS_OF` date in that file.
+`shared/cards.js` holds 45 real US cards (Chase, American Express, Capital One, Citi, Wells Fargo, Bank of America, Discover, plus Apple Card and Bilt), covering travel, hotel, airline, cash back, 0% APR, credit-building and small-business cards. Offers were researched from issuer pages and card-review sites on the `AS_OF` date in that file.
 
 - **Welcome offers change often and many vary by applicant.** Cards whose offer conflicted across sources carry an `offerNote` that is shown to visitors. Every card links to its issuer's site.
 - **APRs are not listed**, because they depend on the applicant. The sites say "Variable — set by issuer".
@@ -22,6 +22,8 @@ Three standalone prototypes of a "find the credit card for you" site. Each one h
 Built around the questions people ask most on card forums (e.g. r/CreditCards' recommendation template):
 
 - **Cards I already have** — add your current cards and every row shows only what a new card *adds* on top of them ("what should my next card be?").
+- **Can I actually earn the bonus?** — a sign-up bonus only counts when your monthly spending reaches its requirement in time (e.g. $30,000 in 3 months doesn't count at $2,070/mo); the bonus shows struck through, with the spending it needs.
+- **Business cards** — marked "Business" and shown by default; untick "Include small-business cards" to hide them. They have their own ranking page and are compared with other business cards.
 - **Is the fee worth it after year one?** — a "Yr 2+" column (▲ = beats the best no-fee card for you) and a plain-English verdict in each row, including how much of a card's credits you'd need to use to break even.
 - **Can I get it?** — Chase 5/24 check from "cards opened in the last 24 months" (with an option to hide likely denials), plus each issuer's bonus/application rules.
 - **Walmart / Target / Costco** — move part of your grocery spend to stores most cards don't count as groceries; network notes flag that Costco warehouses only take Visa.
@@ -37,6 +39,7 @@ CardCompass is built to be found in search and to look good when shared:
 - **Tags on every page** — title, description, canonical URL, Open Graph and Twitter/X preview tags, plus schema.org structured data (`CreditCard`, `ItemList`, `BreadcrumbList`, `WebApplication`).
 - **Share images** — a 1200×630 preview image for the home page and for every card (`c-explorer/public/og/`), plus app icons and a web app manifest for "Add to Home Screen".
 - **`sitemap.xml` and `robots.txt`**, and real 404s for unknown URLs.
+- **About & Privacy pages** — `/about/` explains how cards are valued, where the data comes from and that no issuer pays to be ranked; `/privacy/` says exactly what is stored. Search engines look for this on finance sites.
 - **Home page FAQ** — a short "About CardCompass" section (with `FAQPage` data) gives search engines readable text, since the table itself is drawn by JavaScript.
 - **Sharing in the app** — "Share setup" opens the phone's share sheet (or copies the link on desktop); each expanded card has "Share card" and "Full breakdown" links.
 
