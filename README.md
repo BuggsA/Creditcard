@@ -4,9 +4,11 @@ Three standalone prototypes of a "find the credit card for you" site. Each one h
 
 | Dir | Name | Feel | How you find a card |
 | --- | --- | --- | --- |
-| [`a-finder/`](a-finder) | **CardCompass** | Clean, airy, light blue. Familiar "catalog" UX. | Tap benefit tiles → filter sidebar with chips + sort → card detail → side-by-side compare (up to 4, "only show differences"). |
+| [`a-finder/`](a-finder) | **Finder** | Clean, airy, light blue. Familiar "catalog" UX. | Tap benefit tiles → filter sidebar with chips + sort → card detail → side-by-side compare (up to 4, "only show differences"). |
 | [`b-matchmaker/`](b-matchmaker) | **Kindred** | Warm cream & coral, serif type, friendly copy. | 5-question quiz, one question per screen → one top pick with plain-English "why it fits you" → runners-up, head-to-head verdicts, full ranked list. |
 | [`c-explorer/`](c-explorer) | **CardCove** | Dark, data-dense, monospace numbers. For power users. | Enter your monthly spending (sliders/presets) + must-have toggles → sortable table of *your* dollar value per card, stacked value bars, expandable rows, compare dock that tells you what spending would flip the winner. See [CardCove features](#cardcove-features). |
+
+Prototypes A and B carry a `noindex` tag so search engines only index CardCove (`c-explorer`), the live site.
 
 ## Card data
 

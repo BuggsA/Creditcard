@@ -43,7 +43,7 @@
 
   // ---------- home ----------
   function renderHome() {
-    document.title = "CardCompass — Find your card";
+    document.title = "Finder — Find your credit card";
     const picked = new Set();
     app.innerHTML = `
       <section class="hero">
@@ -125,7 +125,7 @@
   }
 
   function renderResults(q) {
-    document.title = "Browse cards — CardCompass";
+    document.title = "Browse cards — Finder";
     const s = readState(q);
     let list = applyFilters(s);
     const sorters = {
@@ -264,7 +264,7 @@
   function renderDetail(id) {
     const c = CC.byId(id);
     if (!c) return renderHome();
-    document.title = `${c.name} — CardCompass`;
+    document.title = `${c.name} — Finder`;
     const cats = Object.keys(CATEGORIES).filter((k) => k !== "other" && c.earn[k]).concat("other");
     app.innerHTML = `
       <div class="crumbs"><a href="#/cards">← All cards</a></div>
@@ -332,7 +332,7 @@
   let diffOnly = false;
   const closedGroups = new Set();
   function renderCompare() {
-    document.title = "Compare — CardCompass";
+    document.title = "Compare — Finder";
     const cards = compare.map(CC.byId);
     if (cards.length < 2) {
       app.innerHTML = `<div class="cmp-empty"><h1>Compare cards side by side</h1><p>${cards.length ? "Add at least one more card" : "Tick “Compare” on up to 4 cards"} to see them next to each other.</p><a class="btn" href="#/cards">Browse cards</a></div>`;
